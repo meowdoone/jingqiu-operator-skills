@@ -111,5 +111,4 @@ flowchart TD
 
 ## 方法来源
 
-需要具体视频、阅读范围或专家分歧时读 [付费增长实操研究](../../research/expert-paid-growth-2026-09-08.md)。Aaron Young 支持搜索预算和细分诊断，Ben Heath 支持信息与用户认知匹配，Thomas Petit 支持 App 订阅、归因与整体经营并行。B2B SaaS CRM 链路是本项目设计，不冒充上述视频已验证案例。
-
+搜索预算与细分诊断、信息与用户认知匹配、App 订阅和整体经营分别核查。B2B SaaS CRM 链路是待按具体业务验证的执行方案，不代表已在真实账户跑通。

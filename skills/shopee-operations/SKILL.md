@@ -5,7 +5,7 @@ description: Review Shopee Listing and variant promises, paid-order conversion, 
 
 # Shopee operations
 
-Begin with what the merchant needs: a correct offer, a product to test, a specific content improvement, or a spending decision. The source research is Brazilian; check the selected country and account rather than applying Brazilian fees, budgets or interface controls worldwide.
+Begin with what the merchant needs: a correct offer, a product to test, a specific content improvement, or a spending decision. Check the selected country and account rather than applying Brazilian fees, budgets or interface controls worldwide.
 
 ```mermaid
 flowchart TD
@@ -31,9 +31,9 @@ flowchart TD
 
 Resolve market, account, exact item/model/SKU identities, language, currency, current listing state and requested action. Use the merchant's existing exports, ERP/connector or seller interface. Record report dates and attribution definitions. Analysis or a draft does not authorize publication, budget changes or account setup.
 
-Read current available advertising modes. Caue Oliveira's 2024 product-search keyword workflow and Vitor Miranda's 2025 GMV Max workflow are not one combined interface. Route to the actual mode; an unsupported control is a blocked operation, not something to emulate through another account.
+Read current available advertising modes. Product-search keyword controls and GMV Max controls are not one combined interface. Route to the actual mode; an unsupported control is a blocked operation, not something to emulate through another account.
 
-**Complete when:** each requested target and its available operation is identified, or missing evidence is listed. Research/current-policy checks are scoped to the selected country and task.
+**Complete when:** each requested target and its available operation is identified, or missing evidence is listed. Current-policy checks are scoped to the selected country and task.
 
 ## Normalize inputs without losing meaning
 
@@ -95,9 +95,3 @@ Apply only the user's authorized changes to resolved item/campaign IDs through a
 After a write, reopen the same market/account and verify saved values, review status, relevant variant prices/stock, and buyer-visible state. For ads, distinguish saved configuration, enabled state, actual delivery and matched paid orders. No step implies the next.
 
 **Complete when:** every requested item is read back or explicitly pending/blocked. Deliver the final state, changes and remaining observation needs. Do not claim sales or return improvements until the relevant actual results exist.
-
-## Practitioner basis
-
-- [Caue Oliveira, Shopee Ads, 2024-01-09](https://www.youtube.com/watch?v=ECli2Z1iulA): full subtitle reading; intent-specific keywords, bounded tests and contribution costs.
-- [Vitor Miranda, updated Shopee Ads guide, 2025](https://www.youtube.com/watch?v=3UEIV-o4FF4): full subtitle reading; cover/promise, paid-order export, stock/contribution, GMV Max volume versus margin. Country and interface are historical context.
-- For provenance, limitations or method changes in this repository, read [the evidence note](../../research/expert-mercado-shopee-2026-09-08.md). No source performance claim is the user's own achievement.

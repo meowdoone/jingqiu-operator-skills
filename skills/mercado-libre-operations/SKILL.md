@@ -5,7 +5,7 @@ description: Review Mercado Libre products, catalog competition, Listing content
 
 # Mercado Libre operations
 
-Turn the requested store task into a product-specific decision. Research informing this skill is Brazilian practitioner work, not a claim that every Latin American site or merchant account behaves the same way.
+Turn the requested store task into a product-specific decision. Check each country and merchant account separately; Brazilian terminology, controls and commercial conditions do not apply across every Latin American site.
 
 ```mermaid
 flowchart TD
@@ -51,13 +51,13 @@ Retain missing values as missing. Identify incomplete samples and newer items se
 
 ### Listing and lifecycle
 
-- **Prepare/publish:** confirm item facts, category/catalog relationship, variations, price, image rights, stock and delivery. Return an exact before/desired patch and source for each changed factual claim. A new listing needs a live country-specific capability/policy check before publication; the historical research is not a current policy manual.
+- **Prepare/publish:** confirm item facts, category/catalog relationship, variations, price, image rights, stock and delivery. Return an exact before/desired patch and source for each changed factual claim. A new listing needs a live country-specific capability/policy check before publication.
 - **Improve conversion:** use real buyer questions to find missing dimensions, compatibility, contents, use or delivery information. Change the relevant image or passage; show what the evidence supports and what remains unknown. Competitive price means a comparable offer, not necessarily the lowest price.
 - **Pause/unpublish:** separate unavailable stock, policy/account problems and commercial underperformance. Review open orders; propose the narrowest reversible action. This skill does not authorize permanent deletion. Recover only after the original cause is resolved and the current task permits it.
 
 ### Clips and product media
 
-Write a brief around one buying question: what must be shown, which exact product/variant appears, what evidence supports the claim, and how the viewer can choose correctly. Images and Clips should reduce uncertainty, not decorate an unsupported promise. Check current local upload eligibility/format separately; the research does not establish a universal Clips specification or a proven video-growth formula. Asset generation and upload require their own requested scope and rights.
+Write a brief around one buying question: what must be shown, which exact product/variant appears, what evidence supports the claim, and how the viewer can choose correctly. Images and Clips should reduce uncertainty, not decorate an unsupported promise. Check current local upload eligibility/format separately; do not assume a universal Clips specification or video-growth formula. Asset generation and upload require their own requested scope and rights.
 
 ### Product Ads
 
@@ -67,7 +67,7 @@ Write a brief around one buying question: what must be shown, which exact produc
 4. If budget is not exhausted, more budget may not address the constraint. If it is repeatedly exhausted and matched, mature results meet the merchant's floor, prepare a bounded increase with a check-back condition.
 5. If costs exceed the merchant's limits or the product cannot be fulfilled, issue a stop-review with exact IDs. A loss limit can require attention before the normal observation window; do not treat a learning-period story as permission for unlimited loss.
 
-Bruno Gontijo prefers low ACOS; Lucas Schwichtemberg uses stage/category-specific tradeoffs. Neither a 3%/5% ACOS nor an 8–15-item group is a default rule. Choose limits from product contribution, test purpose and approved loss budget.
+Choose the cost-versus-volume tradeoff for the product's stage and category. Neither a 3%/5% ACOS nor an 8–15-item group is a default rule. Choose limits from product contribution, test purpose and approved loss budget.
 
 ## Optional local checks in this repository
 
@@ -92,9 +92,3 @@ For authorized changes, record exact before/after values and approved scope. Use
 Reopen the same account/site/item or campaign. Check saved values, review/publication status and buyer-visible price, variations, availability and delivery where relevant. Report separately: drafted, submitted, pending review, saved, buyer-visible. An API receipt is not proof of public availability; an ad enabled is not evidence of delivery or sales.
 
 **Complete when:** every requested target is read back or explicitly listed as blocked/pending, with remaining uncertainty and no fabricated result. Return the decision table, relevant artifact and concise source-backed explanation; omit private customer/account data from public output.
-
-## Practitioner basis
-
-- [Bruno Gontijo, Product Ads setup, 2023-03-15](https://www.youtube.com/watch?v=6Pl1jHBlvqc): full subtitle reading; campaign sales scope, stock, exposure and actual/target cost distinction.
-- [Bruno + Lucas Schwichtemberg, 2024 discussion](https://www.youtube.com/watch?v=ZhSOevbUKmo): only 00:00–35:38 read; catalog, contribution, grouping and buying-question content. No fixed threshold is treated as policy.
-- If researching provenance or revising the methods inside this repository, read [the evidence note](../../research/expert-mercado-shopee-2026-09-08.md). Do not represent these external experiences as the user's achieved results.

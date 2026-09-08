@@ -1,98 +1,99 @@
 ---
 name: geo-distribution
-description: Research GEO questions and cited sources, prepare evidence-backed content, manage authorized distribution and verify mentions, citations and referral outcomes separately. Use for GEO/AEO or AdsPower-based publishing workflows, not impersonated endorsements or general paid advertising.
+description: Plan Google-account pools and channel-specific GEO publishing; inspect ChatGPT and Gemini recommendations, clean product/source observations and turn gaps into content changes. Use for GEO/AEO research or authorized publishing, not paid-ad management.
 ---
 
-# GEO and content distribution
+# GEO: account operations and recommendation analysis
 
-Operate two distinct jobs: **make useful source material discoverable** and **manage authorized publication**. A browser/device profile is account context; it is not an independent person, authority signal or proof of citations.
+Use two connected jobs: authorized multi-channel distribution and observable recommendation analysis. Read [the operating method](references/operating-method.md) when selecting channels, assigning accounts, defining sampling, cleaning data or interpreting scores; it contains the channel matrix, field contracts, decision rules and English flow diagrams.
 
-```mermaid
-flowchart TD
-  A[Real questions and cited sources] --> B{Original evidence available?}
-  B -- No --> H[Create evidence task]
-  B -- Yes --> C[Canonical answer and platform versions]
-  C --> D{Publication requested and authorized?}
-  D -- No --> I[Deliver content draft]
-  D -- Yes --> E[Confirm account role and browser or device]
-  E --> F[Publish approved version]
-  F --> G{Public identity, content and URL match?}
-  G -- No --> J[Hold verification; inspect before retry]
-  G -- Yes --> K[Record verified publication]
-  K --> L[Index and answer observations]
-  L --> M[Mention and citation evidence]
-  M --> N[Referral and qualified-action evidence]
-  N --> O[Compare baseline and control; keep limits visible]
-```
+## Choose the requested work
 
-## Select the requested outcome
+Identify product, market, language, business question and scope: method design, research, drafts, authorized publication or measurement. Use existing accounts, content, tables and tools. A documentation request does not authorize creating accounts, posting, paid submissions or running a new recurring campaign.
 
-Identify brand, market, language, user question/topic, intended source page and requested scope: research, content draft, distribution, or measurement. A research request does not start posting. Reuse existing content, accounts, tools and workflows before proposing new infrastructure.
+This user's method uses Google accounts as a major part of an account pool, AdsPower/browser environments and mobile devices. Treat these as the user's stated operating method, not verified inventory or evidence of results. Public artifacts contain role references, not credentials, personal account details or device/proxy configurations.
 
-For this user's workflow, account pools, AdsPower/fingerprint browsers and managed phones may be authorized operational tools. Resolve the actual profile/device reference, represented brand/team and permission before any account action. Do not infer that a mentioned environment is configured or currently usable. Keep credentials, proxies, device identifiers and private conversations out of public artifacts.
+## Assign accounts and channels
 
-## Research questions and current sources
+1. Resolve each existing account's real brand/team, owner, target platform, market/language, permitted actions and environment. Google sign-in does not grant publishing permissions on other services.
+2. Select channels from the reference matrix using topic relevance, current public access, observed citations, content fit and permission. Distinguish self-publishing, editor-approved directories, independent reviews, commercial media and private communities.
+3. Give each task a content purpose and destination. Reuse product facts while adapting demonstrations, long-form explanations, technical material and relevant community answers. Do not treat many same-owner accounts as independent endorsements.
+4. Record the approved batch scope, cadence/capacity, review requirements and stopping conditions. No account rotation to evade restrictions, fake identities, fabricated reviews or automated mutual support.
 
-1. Start from approved, redacted customer questions, sales/support material, search queries or user-supplied questions. Keep real observations separate from suggested question variants. Group matching intent into a topic instead of generating a separate page for every phrasing.
-2. Observe answers for the selected market/language/product surface. Record exact prompt, time, interface/model if visible, run, answer and cited URL. Capture the actual citation; do not infer it from the answer text or a brand mention.
-3. Separate owned pages, independent media, commercial partners, video and communities. Inspect the sources actually used for the question and what information they provide. A popular platform is not automatically relevant to this niche.
-4. Identify the answer gap and evidence needed: specifications, use cases, comparisons, restrictions, steps, demos, dates and responsible author. If evidence is missing, produce a research task, not a confident factual answer.
+**Complete when:** each proposed task has a channel, account role, owner, factual basis, version and publication permission or explicit blocker. Account count and posting volume remain operational measures, not ranking signals.
 
-**Complete when:** the topic has a traceable problem, observed source pattern and an exact content task, or an explicit evidence gap. A prompt list is not a measured demand estimate.
+## Observe recommendation results
 
-## Build and adapt the source content
+1. Agree the question set, real product constraints, branded/unbranded strata, number of repeats and time batches before sampling. Preserve the plan; do not repeat until the target appears.
+2. Keep ChatGPT consumer search/shopping, OpenAI API, Gemini App/API and Google Search AI surfaces separate. Record visible model, locale, login/personalization/Memory, search setting, actual search evidence, session mode, timestamp and run ID. Unknown stays unknown.
+3. Save the original answer and evidence. Extract mentioned brands, recommended products, visible reasons, ordered positions only when ordered, actual citations and other link roles separately.
+4. Inspect actual cited pages and map their information to the user's purchase conditions. A follow-up explanation or requested score is a new answer, not the original hidden reasoning or ranking log.
 
-Write a clear answer that remains understandable outside its surrounding page. Use the original product/brand material as the factual source; explain limits and date substantive updates. Reuse actual demonstrations and add useful transcripts or captions for audio/video when in scope. No fixed paragraph length, special file or repeated wording guarantees citations.
+**Complete when:** every observation has its original evidence, conditions and status. A configured search tool is not proof it was used; no visible sources is not proof no source exists. Technical failures, refusals and feature-not-triggered states are not negative recommendation results.
 
-Prepare platform-specific versions around the same facts. For a community reply, state the contributor's real identity/brand relationship and answer the thread's actual question. For PR/affiliate work, retain the commercial disclosure and allow independent editorial judgment. Do not manufacture user experiences, independent endorsements, mutual likes or third-party identities.
+## Clean before comparing
 
-**Complete when:** every material factual claim has an approved source, each version has a destination and role, and any unknown fact or permission is visible before submission.
+Use the four minimal tables in the reference: runs, answer_items, sources and actions. Preserve raw responses; proposed entity merges or source classifications need evidence.
 
-## Publish only through the scoped authorized account
+- Keep brands, product families, variants and sellers distinct. Review ambiguous aliases.
+- Keep raw URL, tracking-cleaned URL and verified canonical separately; retain product-identity parameters.
+- De-duplicate repeated imports of the same run, not independent real runs with identical answers. Conflict for the same run ID requires review.
+- Distinguish citations, related/verification links and retrieved candidates. Collapse repeated same-URL coverage within one answer while retaining positions.
+- Track domains, original works, publishers and ownership. Syndication and several owned accounts are not independent support.
+- Retain valid answers without visible citations in the overall denominator; report confirmed-search subsets separately.
 
-Use an existing approved connector or browser/device surface. Inspect the actual logged-in identity and current editor before filling anything. Record:
+**Complete when:** every retained row can be traced to raw evidence, all exclusions have reasons, unknowns are visible and comparison groups share compatible conditions.
 
-`task_id, account_role, environment_ref, authorized, platform, market, language, content_version, evidence_refs, canonical_url, submitted, post_url, verified_at, public_readback_matches, failure_reason, next_owner`.
+## Turn observations into actions
 
-The environment reference points to the correct authorized session; do not rotate accounts to evade a restriction or impersonate independent support. For a challenge, permission failure or unavailable interface, save the draft and stop that action. For an uncertain submission, inspect the destination before retrying to prevent duplicate posts.
+Use visible recommendation conditions to check fit, specifications, limitations, current prices/availability, comparison evidence, demonstrations, identity and access. Mark confirmed missing / partial / sufficient / unknown with evidence.
 
-After authorized submission, reopen the resulting post/page and compare identity, body, media, destination links and public visibility with the approved version. A success toast alone remains `VERIFY`; a draft/save state remains a draft. If a platform hides the post pending review, report pending review instead of public completion.
+These are operator content checks, not ChatGPT/Gemini scores or recovered weights. Prioritize by business relevance, repeated evidence gaps, feasibility and cost; label any custom weights as team configuration.
 
-**Complete when:** every requested post is independently read back or explicitly pending/blocked with its next step. Do not turn an authorized single post into a recurring monitor or publishing campaign.
+Produce exact changes: page/Listing facts, compatibility tables, original demos, useful topic-specific articles, permitted community answers or genuine editorial outreach. Keep commercial relationships visible.
 
-## Measure the stages separately
+**Complete when:** each action names a gap, affected question/topic, exact page or channel, evidence, owner and testable expected change. Missing product truth becomes a research task, not invented copy.
 
-| Stage | Evidence required | What it does not prove |
-| --- | --- | --- |
-| Published | Exact public post URL and matching readback | Indexed or cited |
-| Accessible/indexed | Current retrieval/index evidence for that URL | Mentioned by an answer engine |
-| Brand mention | Captured answer names the brand in context | A source link or recommendation |
-| Citation | Captured answer links the exact source URL | A click, sale or causal effect |
-| Referral visit | Real site analytics/referrer record | Complete credit for direct/brand-search visits |
-| Qualified action | Defined first-party event/order with matched window | Proof that a content change caused it |
+## Execute only within the approved publication scope
 
-Record question variants, repeated runs, surface, language, region and dates. A single screenshot is one observation. Use comparable topic-level test and control groups when evaluating a content change; a shared page can affect multiple questions, so avoid contaminating the groups. Keep the question set and measurement method stable during the comparison. State uncontrolled changes and sampling limits before interpreting trends.
+Prefer available authorized APIs/connectors. If unavailable, use an existing permitted browser/device flow; do not invent integration support. Confirm actual identity and editor before submission.
 
-For B2B, optionally add consented post-conversion “how did you hear about us” responses as self-reported evidence; do not replace observed attribution with them. Brand searches and direct traffic are auxiliary signals, not wholly attributable GEO revenue.
+Use a stable task key such as `topic_id + platform + destination_id + content_version`. Keep receipt, public URL, state, evidence reference and next owner. Avoid concurrent writes to one destination. On challenge, limit or permission failure, hold that task; on uncertain submission, inspect before retrying.
 
-**Complete when:** the report names the measured stage, population/window, evidence and limits. Separate “observed improvement” from a reproducible causal claim.
+Reopen the result and compare identity, text, media and links with the approved version. Editor review/pending access is not public completion.
 
-## Optional local ledger checker
+**Complete when:** every requested item is independently read back or explicitly pending/blocked. No unrequested account creation, purchase, review solicitation campaign or expanded posting batch.
 
-When this repository is available, inspect `scripts/review.py` and `examples.json`, then run from its root:
+## Report separate results and retest
+
+Use the exact denominators in the reference. Report planned/valid/failed runs, mention rate, recommendation rate, target citation rate, confirmed-search subset, unique URLs/domains/publishers and first-party business results independently. No fabricated rankings for unordered or missing items.
+
+Keep question conditions stable before/after the change, repeat across planned batches and retain comparable unchanged topics. Shared pages and simultaneous campaigns can contaminate comparisons. State sample size, variation and confounds; observational lift is not proof of causation.
+
+## Available local implementation
+
+From this repository root:
 
 ```sh
 python3 scripts/review.py examples.json --example distribution
-python3 scripts/review.py /absolute/path/to/distribution-review.json
 ```
 
-The actual input is `{ "kind": "distribution", "posts": [...] }`. Each post requires unique `task_id`, `account_role`, `content_version`, `environment_ref`, `canonical_url` and actual boolean `authorized`, `submitted`, `public_readback_matches`; verified publications also need `post_url` and `verified_at`.
+The helper only checks a supplied publication ledger: actual input is `{"kind":"distribution","posts":[...]}`. It requires unique task IDs, account/environment/content references and real boolean authorization/submission/readback values; a verified entry also needs valid URL and timestamp fields.
 
-The helper checks the supplied ledger only. `PUBLISHED_VERIFIED` does not mean the script visited the URL or authenticated a person: the operator must supply real readback evidence. It does not publish, crawl, inspect rankings, compute citation lift or prove referral conversion. If the helper is absent, use the same ledger in an existing table; do not invent a connector.
+`PUBLISHED_VERIFIED` means supplied evidence fields passed, not that the script visited the post. It does not operate accounts, post, inspect index/rankings, query answer engines, clean their responses or calculate citation lift. Those tasks follow the method using available approved tools; absent capabilities remain implementation work.
 
-## Practitioner evidence and boundaries
-
-- [Ethan Smith / Lenny’s Podcast, 2025-09-14](https://www.youtube.com/watch?v=iT7kq-R3Gjc): subtitle excerpts 15:47–27:43, 29:53–41:11 and 43:35–46:13. Question research, authentic community participation, source-specific content, repeated observations and controls.
-- [Lily Ray / MozCon virtual presentation, 2025-11-11](https://www.youtube.com/watch?v=2nJkT8zOzcM): subtitle excerpt 19:24–36:36. Clear answers, brand facts, region-specific content, analytics and genuine updates.
-- Both are external practitioners with commercial interests. Do not adopt their historical traffic ratios, platform-source explanations or speculative ranking mechanisms as current universal facts. These sources do not validate the user's device/account setup or results.
-- For method changes or provenance while in this repository, read [the research note](../../research/expert-geo-2026-09-08.md). Verify current technical access and platform requirements from primary documentation when an actual integration requires them.
+```mermaid
+flowchart TD
+  A[Product questions and evidence] --> B[Fixed answer observations]
+  B --> C[Clean products / URLs / publishers]
+  C --> D[Content and channel gaps]
+  D --> E[Account roles and platform versions]
+  E --> F{Publication in approved scope?}
+  F -- No --> G[Deliver draft and task plan]
+  F -- Yes --> H[API or permitted browser / mobile]
+  H --> I{Public readback matches?}
+  I -- No --> J[Hold and inspect status]
+  I -- Yes --> K[Publication ledger]
+  K --> L[Matched recommendation and citation retest]
+  L --> M[Business results and next change]
+```
