@@ -9,7 +9,7 @@
 |领域|方法与 Skill|重点|
 |---|---|---|
 |TikTok Shop|[tiktok-shop-operations](skills/tiktok-shop-operations/SKILL.md)|可证明的商品场景、可用授权素材成本、寄样分支、点击/购买/退款诊断、GMV Max 素材状态与下一版 brief|
-|Amazon|[amazon-operations](skills/amazon-operations/SKILL.md)|可售报价、搜索词、点击与购买、SKU 利润、预算；四类商品操作|
+|Amazon|[amazon-operations](skills/amazon-operations/SKILL.md) · [四源与经营判断](skills/amazon-operations/references/operating-method.md)|卖家精灵、SIF、Sorftime、西柚；选品成本与现金、Listing 购买疑问、视频证据、具体广告对象和贡献目标|
 |Shopify|[shopify-operations](skills/shopify-operations/SKILL.md) · [DTC 网站设计](skills/shopify-operations/references/storefront-design.md)|从品牌定位、购买路径到页面交互与建站验收；包含商品、媒体和广告承接|
 |AliExpress / AE|[aliexpress-operations](skills/aliexpress-operations/SKILL.md)|经营权责、国家×规格总报价与结算、漏斗诊断、活动亏损变体和贡献测算|
 |美客多|[mercado-libre-operations](skills/mercado-libre-operations/SKILL.md)|国家与履约路线、目录竞争与贡献底线、AdGroup 影响范围、预算/排名损失、Full 库存与 Clips|
@@ -62,6 +62,8 @@ python3 -m unittest discover -s tests -v
 |`shots`|整理审核者提供的带时码镜头检查，指出商品/身份/动作/声音/权利问题|不读取像素、不做视觉识别；READY_FOR_EDIT 不是成片通过|
 
 贡献公式：同一组订单与花费下，`gross_revenue − refunds − cogs − fees − fulfillment − spend`。`contribution_roi = 广告后贡献 / spend`，不是平台 ROAS。费用不能重复扣；日期、退款范围、服务成本与时区先由数据提供者统一。已有支出超限的提示不依赖利润是否补齐，但数据无法确认时仍须人工核查。
+
+Amazon 的四源用于市场、竞品与查询研究，自有广告/订单/成本/库存用于检验经营结果。方法包含选品压力测试、父子体与统计窗口冲突、Listing 字段分配、搜索词与版位的不同改动层级，以及“ACOS 25% 仍低于贡献目标”的算例。当前公开实现复用 `paid` / `catalog`，未内置四家连接器、关键词打分器或竞价执行；不要把方法中建议的流程当作接口已接通。
 
 ## Agent 怎样使用
 
