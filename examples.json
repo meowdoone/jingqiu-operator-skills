@@ -1,0 +1,25 @@
+{
+  "paid": {
+    "kind": "paid",
+    "scope": {"account": "DEMO", "market": "US", "currency": "USD", "start": "2026-08-01", "end": "2026-08-07", "revenue_basis": "matched_order_cohort", "attribution_window": "7d_click"},
+    "policy": {"min_orders": 20, "max_spend": 1000, "loss_limit": 100, "min_contribution_roi": 0.2},
+    "rows": [{"entity_id": "DEMO-SKU-01", "account": "DEMO", "market": "US", "currency": "USD", "start": "2026-08-01", "end": "2026-08-07", "revenue_basis": "matched_order_cohort", "attribution_window": "7d_click", "population_matched": true, "costs_complete": true, "window_mature": true, "sellable": true, "orders": 30, "gross_revenue": 3000, "refunds": 200, "cogs": 900, "fees": 200, "fulfillment": 200, "spend": 500}]
+  },
+  "catalog": {
+    "kind": "catalog", "platform": "shopify", "market": "US", "account": "DEMO", "intent": "update",
+    "items": [{"sku": "DEMO-SKU-01", "remote_id": "DEMO-PRODUCT-01", "before": {"title": "Desk light", "price": 40}, "desired": {"title": "Adjustable desk light", "price": 40}, "source_refs": ["demo-approved-spec"], "variant_mapping_checked": true, "fulfillment_checked": true, "account_permission_checked": true}]
+  },
+  "cohorts": {
+    "kind": "cohorts", "as_of": "2026-09-08", "horizon_days": 28,
+    "activation_definition": "Completed one usable export within 28 days", "retention_definition": "Completed a core task during days 22-28",
+    "cohorts": [{"cohort_id": "DEMO-A", "cohort_end": "2026-08-01", "source": "community", "unit": "user", "eligible": 100, "activated": 40, "retained": 20, "paid": 10}, {"cohort_id": "DEMO-B", "cohort_end": "2026-09-05", "source": "paid", "unit": "user", "eligible": 100, "activated": 10, "retained": 0, "paid": 2}]
+  },
+  "distribution": {
+    "kind": "distribution",
+    "posts": [{"task_id": "DEMO-POST-01", "account_role": "official brand", "content_version": "v1", "environment_ref": "demo-profile", "canonical_url": "https://example.com/guide", "authorized": true, "submitted": true, "public_readback_matches": false}]
+  },
+  "shots": {
+    "kind": "shots",
+    "shots": [{"shot_id": "DEMO-SHOT-01", "product_ref": "demo-product-photo", "character_ref": "none", "take": "v2", "reviewer": "demo-reviewer", "timecode": "00:03-00:05", "product_matches": true, "identity_matches": true, "motion_ok": false, "audio_ok": true, "rights_ok": true}]
+  }
+}
