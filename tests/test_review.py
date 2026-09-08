@@ -23,6 +23,129 @@ class ReviewTests(unittest.TestCase):
         row = module.review(self.data("paid"))["rows"][0]
         self.assertEqual((row["contribution"], row["contribution_roi"], row["status"]), (1000, 2, "REVIEW_SCALE"))
 
+    def test_mercado_budget_review_keeps_whole_campaign_impact(self):
+        result = module.review(self.data("mercado_ads"))
+        self.assertEqual(result["status"], "LIMITED_BUDGET_REVIEW")
+        self.assertEqual(result["campaign_impact_item_ids"], ["DEMO-A", "DEMO-B1", "DEMO-B2", "DEMO-C"])
+        self.assertEqual(result["group_impacts"][1]["member_item_ids"], ["DEMO-B1", "DEMO-B2"])
+        self.assertEqual(result["review_extra_spend_cap"], 25)
+        self.assertEqual(result["losses"]["level"], "campaign")
+        self.assertNotIn("losses", result["group_impacts"][0])
+
+    def test_mercado_scope_or_grouping_conflict_blocks_budget(self):
+        for target, key, value in (("metrics", "site_id", "MLB"), ("group", "advertiser_id", "OTHER"), ("group", "campaign_id", "OTHER"), ("member", "parent_id", "WRONG")):
+            data = self.data("mercado_ads")
+            obj = data["metrics"] if target == "metrics" else data["groups"][0] if target == "group" else data["groups"][0]["members"][0]
+            obj[key] = value
+            result = module.review(data)
+            self.assertEqual(result["status"], "RECONCILE_SCOPE")
+            self.assertIsNone(result["review_extra_spend_cap"])
+
+    def test_mercado_missing_loss_is_unknown_not_zero(self):
+        data = self.data("mercado_ads")
+        data["metrics"]["budget_lost_pct"] = None
+        result = module.review(data)
+        self.assertEqual(result["status"], "NEEDS_DATA")
+        self.assertIsNone(result["losses"]["budget_lost_pct"])
+        self.assertIsNone(result["review_extra_spend_cap"])
+
+    def test_mercado_listed_is_catalog_reason_not_unpurchasable(self):
+        data = self.data("mercado_ads")
+        data["groups"][0]["members"][0].update(catalog_status="listed", catalog_reason="winner_has_better_reputation")
+        result = module.review(data)
+        self.assertEqual(result["status"], "FIX_CATALOG_REASON")
+        self.assertEqual(result["catalog_listed"], [{"item_id": "DEMO-A", "reason": "winner_has_better_reputation"}])
+        self.assertIsNone(result["review_extra_spend_cap"])
+
+    def test_mercado_business_and_scope_checks_gate_budget_review(self):
+        cases = {"mapping_verified": "NEEDS_DATA", "ownership_verified": "NEEDS_DATA", "campaign_members_complete": "NEEDS_DATA", "costs_complete": "NEEDS_DATA", "window_mature": "WAIT_FOR_WINDOW", "sellable": "REVIEW_OFFER_STOCK", "stock_ok": "REVIEW_OFFER_STOCK", "contribution_ok": "REVIEW_ECONOMICS", "budget_constrained": "NEEDS_DATA"}
+        for key, expected in cases.items():
+            with self.subTest(key=key):
+                data = self.data("mercado_ads")
+                data["checks"][key] = False
+                result = module.review(data)
+                self.assertEqual(result["status"], expected)
+                self.assertIsNone(result["review_extra_spend_cap"])
+
+    def test_mercado_material_losses_are_not_just_compared_with_each_other(self):
+        cases = [(2, 1, True, 25, "HOLD"), (5, 40, False, 25, "REVIEW_RANK"),
+                 (35, 40, True, 25, "REVIEW_MIXED_LIMITS"), (35, 10, True, 0, "HOLD"),
+                 (20, 0, True, 25, "LIMITED_BUDGET_REVIEW")]
+        for budget, rank, constrained, cap, expected in cases:
+            with self.subTest(budget=budget, rank=rank, cap=cap):
+                data = self.data("mercado_ads")
+                data["metrics"].update(budget_lost_pct=budget, rank_lost_pct=rank)
+                data["checks"]["budget_constrained"] = constrained
+                data["policy"]["max_extra_spend"] = cap
+                result = module.review(data)
+                self.assertEqual(result["status"], expected)
+                self.assertEqual(result["review_extra_spend_cap"], cap if expected == "LIMITED_BUDGET_REVIEW" else None)
+
+    def test_mercado_operator_threshold_is_explicit_and_configurable(self):
+        data = self.data("mercado_ads")
+        data["policy"]["material_loss_pct"] = 40
+        self.assertEqual(module.review(data)["status"], "HOLD")
+
+    def test_mercado_inconsistent_shares_are_not_a_budget_signal(self):
+        data = self.data("mercado_ads")
+        data["metrics"].update(budget_lost_pct=70, rank_lost_pct=60)
+        with self.assertRaises(ValueError): module.review(data)
+
+    def test_mercado_invalid_metrics_policy_and_flags(self):
+        cases = [("metrics", "budget_lost_pct", v) for v in (-1, 101, True, float("nan"), float("inf"))]
+        cases += [("policy", "material_loss_pct", 0), ("policy", "material_loss_pct", 101),
+                  ("policy", "max_extra_spend", -1), ("metrics", "unit", "fraction"),
+                  ("metrics", "level", "item"), ("checks", "stock_ok", "true")]
+        for section, key, value in cases:
+            with self.subTest(section=section, key=key, value=value):
+                data = self.data("mercado_ads")
+                data[section][key] = value
+                with self.assertRaises(ValueError): module.review(data)
+
+    def test_mercado_missing_state_reason_or_metric_blocks_budget(self):
+        for case in ("status", "reason", "rank"):
+            data = self.data("mercado_ads")
+            member = data["groups"][0]["members"][0]
+            if case == "status": member.pop("catalog_status")
+            elif case == "reason": member["catalog_status"] = "listed"
+            else: data["metrics"].pop("rank_lost_pct")
+            result = module.review(data)
+            self.assertEqual(result["status"], "NEEDS_DATA")
+            self.assertIsNone(result["review_extra_spend_cap"])
+
+    def test_mercado_duplicate_members_or_groups_are_rejected(self):
+        for case in ("group", "member"):
+            data = self.data("mercado_ads")
+            if case == "group": data["groups"].append(copy.deepcopy(data["groups"][0]))
+            else: data["groups"][1]["members"][0]["item_id"] = "DEMO-A"
+            with self.assertRaises(ValueError): module.review(data)
+
+    def test_mercado_family_item_and_non_catalog_mapping_conflicts(self):
+        for case in ("family", "item_count", "non_catalog"):
+            data = self.data("mercado_ads")
+            if case == "family": data["groups"][1]["members"][0]["family_id"] = "WRONG"
+            elif case == "item_count": data["groups"][2]["members"].append({"item_id": "DEMO-D", "catalog_status": "non_catalog"})
+            else: data["groups"][0]["members"][0]["catalog_status"] = "non_catalog"
+            result = module.review(data)
+            self.assertEqual(result["status"], "RECONCILE_SCOPE")
+            self.assertIsNone(result["review_extra_spend_cap"])
+
+    def test_mercado_whitespace_ids_cannot_define_impact(self):
+        for case in ("group", "item"):
+            data = self.data("mercado_ads")
+            if case == "group": data["groups"][0]["ad_group_id"] = "  "
+            else: data["groups"][1]["members"][1]["item_id"] = "  "
+            with self.assertRaises(ValueError): module.review(data)
+
+    def test_mercado_missing_metric_does_not_hide_known_stock_constraint(self):
+        data = self.data("mercado_ads")
+        data["metrics"]["budget_lost_pct"] = None
+        data["checks"]["stock_ok"] = False
+        result = module.review(data)
+        self.assertEqual(result["status"], "NEEDS_DATA")
+        self.assertEqual(result["failed_checks"], ["stock_ok"])
+        self.assertIsNone(result["review_extra_spend_cap"])
+
     def test_missing_costs_block_return(self):
         data = self.data("paid")
         data["rows"][0]["costs_complete"] = False

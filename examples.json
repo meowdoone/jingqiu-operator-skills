@@ -13,6 +13,18 @@
       {"sku": "DEMO-B", "before_orders": 30, "before_unit_contribution": 2, "after_orders": 80, "after_unit_contribution": -0.5}
     ]
   },
+  "mercado_ads": {
+    "kind": "mercado_ads",
+    "scope": {"site_id": "MLM", "advertiser_id": "DEMO-ADVERTISER", "campaign_id": "DEMO-CAMPAIGN", "currency": "USD", "start": "2026-08-01", "end": "2026-08-07"},
+    "policy": {"material_loss_pct": 20, "max_extra_spend": 25},
+    "metrics": {"site_id": "MLM", "advertiser_id": "DEMO-ADVERTISER", "campaign_id": "DEMO-CAMPAIGN", "level": "campaign", "unit": "percent", "budget_lost_pct": 35, "rank_lost_pct": 10},
+    "checks": {"mapping_verified": true, "ownership_verified": true, "campaign_members_complete": true, "window_mature": true, "costs_complete": true, "contribution_ok": true, "sellable": true, "stock_ok": true, "budget_constrained": true},
+    "groups": [
+      {"site_id": "MLM", "advertiser_id": "DEMO-ADVERTISER", "campaign_id": "DEMO-CAMPAIGN", "ad_group_id": "DEMO-G-CATALOG", "ad_group_type": "CATALOG", "ad_group_external_id": "DEMO-PARENT", "members": [{"item_id": "DEMO-A", "parent_id": "DEMO-PARENT", "catalog_status": "competing"}]},
+      {"site_id": "MLM", "advertiser_id": "DEMO-ADVERTISER", "campaign_id": "DEMO-CAMPAIGN", "ad_group_id": "DEMO-G-FAMILY", "ad_group_type": "FAMILY", "ad_group_external_id": "DEMO-FAMILY", "members": [{"item_id": "DEMO-B1", "family_id": "DEMO-FAMILY", "catalog_status": "non_catalog"}, {"item_id": "DEMO-B2", "family_id": "DEMO-FAMILY", "catalog_status": "non_catalog"}]},
+      {"site_id": "MLM", "advertiser_id": "DEMO-ADVERTISER", "campaign_id": "DEMO-CAMPAIGN", "ad_group_id": "DEMO-G-ITEM", "ad_group_type": "ITEM", "ad_group_external_id": "DEMO-C", "members": [{"item_id": "DEMO-C", "catalog_status": "non_catalog"}]}
+    ]
+  },
   "catalog": {
     "kind": "catalog", "platform": "shopify", "market": "US", "account": "DEMO", "intent": "update",
     "items": [{"sku": "DEMO-SKU-01", "remote_id": "DEMO-PRODUCT-01", "before": {"title": "Desk light", "price": 40}, "desired": {"title": "Adjustable desk light", "price": 40}, "source_refs": ["demo-approved-spec"], "variant_mapping_checked": true, "fulfillment_checked": true, "account_permission_checked": true}]

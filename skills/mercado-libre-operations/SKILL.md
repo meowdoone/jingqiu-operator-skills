@@ -1,94 +1,175 @@
 ---
 name: mercado-libre-operations
-description: Review Mercado Libre products, catalog competition, Listing content, Clips briefs and Product Ads decisions. Use for Mercado Livre or 美客多 operations; resolve country and exact items before preparing or executing changes.
+description: Mercado Libre and Mercado Livre seller decisions for country-route assortment, catalog competition, Product Ads exposure losses, inventory allocation, Listing and Clips. Use for 美客多 operations; connect each proposed action to the actual offer, advertising group and merchant controls.
 ---
 
 # Mercado Libre operations
 
-Turn the requested store task into a product-specific decision. Check each country and merchant account separately; Brazilian terminology, controls and commercial conditions do not apply across every Latin American site.
+Start with the business decision: which country-route-product combination to support, why an offer loses catalog sales, what limits advertising exposure, or which buyer question needs a page or Clip change. Use only the relevant branches; a requested Listing edit does not require a full-store review.
 
-```mermaid
-flowchart TD
-  A[Country and exact merchant offer] --> B{Catalog identity and evidence complete?}
-  B -- No --> H[Hold item and request missing facts]
-  B -- Yes --> C[Check stock, delivery and contribution]
-  C --> D[Buyer questions to Listing and Clips proposal]
-  C --> E[Group Product Ads by maturity and ticket]
-  D --> F[Exact before and desired change]
-  E --> F
-  F --> G{Current task authorizes this change?}
-  G -- No --> I[Return review proposal]
-  G -- Yes --> J[Apply through verified seller capability]
-  J --> K{Exact target readback matches?}
-  K -- No --> L[Inspect submission state before retry]
-  K -- Yes --> M[Report saved state; observe delivery separately]
+## 1. Choose a viable country, route and offer
+
+Record `site_id`, merchant account, local or cross-border model, available fulfillment route, exact `item_id` and real SKU/variation, objective and observation window. Identify who controls retail price, delivery, stock, promotion funding and advertising. An unavailable route is not a planning option simply because another country's site offers it.
+
+For each requested combination, compare:
+
+- **Demand and competition:** same product/condition, pack size and buyer destination; distinguish public competitor observations from the merchant's actual demand and sales.
+- **Buyer offer:** total payable, applicable installments/discounts, available variant and delivery promise. A cheaper accessory is not a comparable offer for the complete product.
+- **Seller economics:** settlement basis, commission and seller-funded discounts, product cost, inbound and last-mile costs, storage, returns and advertising. Mark what is already deducted from settlement before calculating contribution.
+- **Supply and cash:** sellable stock, inbound arrival, replenishment uncertainty, order obligations and cash tied up until settlement. An available warehouse unit is different from stock in transit or awaiting acceptance.
+
+Decide `test / maintain / revise offer or route / hold` with the reason and owner. For a new combination, specify the question a limited test must answer and its approved loss exposure. For an existing one, compare contribution and fulfillment by the same country, SKU and order cohort—not the whole-store average. Missing costs or route eligibility produce a named gap, not a zero or a guaranteed launch.
+
+## 2. Catalog competition: diagnose the state before chasing a price
+
+First read `catalog_listing`, the associated product identity, and the merchant offer. Shared catalog product information is not necessarily seller-editable; wrong identity requires correction, not copy written to disguise a mismatch. **Non-catalog offers** go to search relevance, offer comparison and buyer-conversion diagnosis; they do not inherit a catalog winner status.
+
+For catalog offers, retain the current competition response or equivalent seller view: `status`, `reason`, `current_price`, `price_to_win`, currency, applicable `boosts`, available winner information and timestamp. Capture destination context when checking the buyer page: winning generally does not guarantee winning for every delivery address.
+
+| Observed state | Business interpretation | Candidate action and retest |
+| --- | --- | --- |
+| `winning` | The offer currently wins in the reported context, not forever or for every buyer | Protect stock and contribution; examine actual share of visits/sales when available before cutting price again. Recheck after offer or delivery changes |
+| `sharing_first_place` | First place is shared; it is not an exclusive win | Compare the applicable offer conditions and observed allocation. Change a controllable condition only if its cost is justified; do not assume a fixed share |
+| `competing` | The offer competes but is not currently winning | Compare price and applicable boosts with the winner, then cost the proposed change. Recheck competition state and fulfilled contribution, not only the saved price |
+| `listed` | The offer is listed but cannot currently win that catalog competition; it can still be searchable and purchasable | Read the actual reason. Reputation, delivery or trust-related restrictions require their corresponding owner; a blind price cut may not remove the cause |
+| Missing or unrecognized | The available evidence does not establish a state | Check the correct site, offer and current supported capability; keep unresolved instead of translating it to “losing” |
+
+`price_to_win` is a competitive recommendation, **not a merchant profit floor or a promise of winning**. A missing recommendation is not a zero price. A boost marked as an opportunity is a possible offer change, not a service the account necessarily qualifies for. Do not prescribe a universal reputation color threshold: use the actual `reason` and current account conditions.
+
+### Synthetic example: the suggested price fails the merchant's floor
+
+All amounts below are fictional USD assumptions, not a platform fee schedule or this user's results. Assume a 10% price-linked fee, product cost 62, fulfillment 12, an explicitly estimated return-loss allowance of 4, and an owner-selected pre-ad contribution floor of 8. These costs have not already been deducted elsewhere.
+
+```text
+Current price 100:      100 − 10 − 62 − 12 − 4 = 12
+Suggested price 92:      92 − 9.2 − 62 − 12 − 4 = 4.8
+Price meeting floor 8:  (62 + 12 + 4 + 8) / (1 − 0.10) = 95.555...
 ```
 
-## Establish the task and usable evidence
+With cent pricing in this simplified case, 95.56 meets the modeled floor; 92 does not. Do not auto-accept 92 or claim 95.56 will win. Compare the actual cost of a relevant delivery/offer improvement, retain the profitable offer, or hold that competition strategy. Advertising would require additional contribution headroom. Replace the assumptions with actual settlement, tax treatment, fee rounding and mature returns before using the calculation for a real decision.
 
-Identify country/site, merchant account, exact item/SKU/variation IDs, requested operation and current capability. Analysis ends in a report; content work ends in a draft; apply changes only when the user's current task authorizes those targets and actions. Do not extend an ad review into listing deletion or account configuration.
+## 3. Product Ads: map the object before changing its budget
 
-Use existing merchant exports, authorized ERP/connectors or the current seller interface. Resolve the identity and requested state with read-only checks first. Record time zone, currency and report dates. For lifecycle actions, inspect current listing/catalog association, outstanding orders, stock and fulfillment. An unavailable permission or unclear catalog identity is a blocker for that item, not permission to create a substitute.
+Use current merchant access or exports to create:
 
-**Complete when:** every in-scope item has an exact target and evidence state, or a named missing input. Preserve a draft path for items that cannot be changed.
+`site → advertiser_id → campaign_id → ad_group_id → group type/key → member items/variants`
 
-## Map fields before interpreting performance
+Current Product Ads distinguishes `CATALOG`, `FAMILY` and `ITEM` group types. Read the returned `ad_group_external_id` and membership rather than manufacturing IDs: catalog groups use the returned catalog parent grouping, User Products use the family grouping, and traditional items use the item identity. Keep `catalog_product_id`, `family_id`, seller SKU and remote ad group distinct.
 
-Keep the exported header, your normalized field and its meaning side by side. Portuguese names such as `impressões`, `cliques`, `investimento`, `vendas por publicidade` are discovery hints, not a guaranteed schema. Distinguish product listings (“anúncios”) from advertising campaigns.
+When variants are unified under a group, an edit, pause or move can affect more than the selected variant. **Do not recommend isolating a new variant into another campaign until current grouping and controls support that action.** Show all affected members in the proposal, including profitable siblings. A campaign-level budget change additionally affects its other groups. Mature/new or high/low-ticket grouping is an operating choice only within these platform boundaries.
 
-| Normalized data | Required distinction |
-| --- | --- |
-| `item_id`, `variation_id`, `catalog_product_id`, merchant | Catalog product and merchant offer are not interchangeable; a SKU label alone is not a safe remote target |
-| stock, replenishment date, fulfillment mode, delivery promise | Availability and an ad's low performance are different diagnoses |
-| impressions, clicks, orders, units | Units are not orders; no delivery is not proof of poor conversion |
-| spend, ad-attributed revenue, item total revenue, channel total revenue | ACOS uses ad revenue; TACOS uses the stated total-sales population; campaign-member organic sales are not whole-shop organic sales |
-| target ACOS/ROAS, actual ACOS/ROAS | A configured target is not a guaranteed spending or return limit |
-| costs, refunds, dates, attribution window | Match population, currency and maturity before profit judgments |
+Verify current API version and locally applicable endpoints before execution. Local marketplace and cross-border documentation can use different routes; older item-level examples do not establish that a current account supports that operation. This Skill defines the mapping required; it does not contain a working advertising connector.
 
-Retain missing values as missing. Identify incomplete samples and newer items separately from mature items. Do not use external market estimates as this merchant's revenue.
+### Diagnose the exposure constraint
 
-## Choose only the requested branch
+Read actual `impressions/prints`, clicks, spend, orders/units, attributed revenue, budget and target/actual ACOS or ROAS. Where supported, add `impression_share`, `lost_impression_share_by_budget` and `lost_impression_share_by_ad_rank` **at their returned reporting level**. Preserve original headers, units and date range; confirm whether a field is a fraction or percentage before displaying it. Missing metrics are unknown, not zero; do not spread campaign losses across SKUs without evidence.
 
-### Listing and lifecycle
+| Evidence | Decision and action | Retest |
+| --- | --- | --- |
+| Material budget-related losses, with supported budget/consumption evidence | If mature contribution, stock and cash can support it, propose a bounded budget increase. If economics fail, fix or narrow the offer/group instead | Recheck exposure losses, actual spend, fulfilled contribution and stock—not just increased clicks |
+| Ranking-related losses dominate while budget has room | Inspect catalog/offer conditions, delivery, content relevance and the campaign's actual return target. More budget alone may leave the constraint unchanged | Change one supported constraint, then compare like-for-like exposure, cost and contribution; do not promise a rank gain |
+| Both loss types matter | List both constraints; identify the next change with enough supporting evidence and an affordable downside | Keep the other constraint visible instead of attributing the entire result to one variable |
+| Little or no exposure, but loss metrics are absent | Check stock, sale/ad eligibility, advertiser ownership, membership and status before inferring weak creative or demand | Restore or verify eligibility first; use a bounded test only where supported. No exposure is not proof the product should be deleted |
+| Clicks without mature purchases | Check buyer destination, actual offer and the questions in section 5; incomplete cohorts cannot establish conversion failure | Track the same source, group/items and observation window through purchase and fulfillment |
 
-- **Prepare/publish:** confirm item facts, category/catalog relationship, variations, price, image rights, stock and delivery. Return an exact before/desired patch and source for each changed factual claim. A new listing needs a live country-specific capability/policy check before publication.
-- **Improve conversion:** use real buyer questions to find missing dimensions, compatibility, contents, use or delivery information. Change the relevant image or passage; show what the evidence supports and what remains unknown. Competitive price means a comparable offer, not necessarily the lowest price.
-- **Pause/unpublish:** separate unavailable stock, policy/account problems and commercial underperformance. Review open orders; propose the narrowest reversible action. This skill does not authorize permanent deletion. Recover only after the original cause is resolved and the current task permits it.
+**Target return is a tradeoff, not a cap.** Where the current campaign exposes `roas_target`, a higher target may trade reach for efficiency; a lower target may increase competitiveness at a lower return. Neither outcome is guaranteed. Cost the change before relaxing a target, and do not change budget and target simultaneously unless the test explicitly measures the combined change. When the account instead exposes ACOS, preserve that definition; convert only with identical attribution, currency and revenue bases. Target ROAS and ACOS are not independent guarantees of profit.
 
-### Clips and product media
+Keep ad-attributed revenue, promoted-item organic revenue and whole-shop revenue separate. ACOS is ad spend divided by the stated ad revenue; TACOS requires an explicitly defined total-sales population. Units are not orders. Reconcile refunds and contribution separately; no metric here proves incremental sales.
 
-Write a brief around one buying question: what must be shown, which exact product/variant appears, what evidence supports the claim, and how the viewer can choose correctly. Images and Clips should reduce uncertainty, not decorate an unsupported promise. Check current local upload eligibility/format separately; do not assume a universal Clips specification or video-growth formula. Asset generation and upload require their own requested scope and rights.
+**Complete this branch with:** current object map, limiting evidence, one candidate change or wait condition, affected members, budget/loss boundary and a revisit condition based on the account's traffic and order maturity. The owner's known loss limit can require attention before normal observation finishes.
 
-### Product Ads
+## 4. Full, Flex and direct shipping: allocate stock, not just ad spend
 
-1. Check offer readiness and catalog competitive position before raising spend. Treat historical statements about catalog winners as hypotheses to verify in the current seller interface.
-2. Separate mature/high-performing items, developing items and new tests. If high and low ticket items consume very different CPCs, consider separate groups. Use the merchant's own behavior, not a fixed universal number of items per campaign.
-3. For an item receiving little exposure, inspect eligibility, stock, offer and budget competition. A separate bounded test is a proposal; “no exposure” alone does not justify deleting the product.
-4. If budget is not exhausted, more budget may not address the constraint. If it is repeatedly exhausted and matched, mature results meet the merchant's floor, prepare a bounded increase with a check-back condition.
-5. If costs exceed the merchant's limits or the product cannot be fulfilled, issue a stop-review with exact IDs. A loss limit can require attention before the normal observation window; do not treat a learning-period story as permission for unlimited loss.
+Only compare services actually available to the seller, item and destination. Record the current owner of inbound preparation, storage, dispatch, last-mile delivery, returns and fees. Full and Flex are logistics arrangements; cross-border selling is a merchant/route context, not proof of access to either.
 
-Choose the cost-versus-volume tradeoff for the product's stage and category. Neither a 3%/5% ACOS nor an 8–15-item group is a default rule. Choose limits from product contribution, test purpose and approved loss budget.
+| Available option | Cost and responsibility to establish | Operating decision |
+| --- | --- | --- |
+| Full | Seller's inbound preparation and replenishment; platform warehouse/dispatch services; actual daily storage, age-related charges, inbound and withdrawal costs; local after-sales terms | Allocate stock to combinations whose expected contribution and turnover cover those costs. Compare keeping slow stock, clearance and withdrawal; never assume “Full” means all costs disappear |
+| Flex | Seller's own carrier or contracted delivery, coverage/cutoff/capacity, actual carrier bill and applicable platform payment/subsidy | Offer only deliverable destinations and capacity. Compare subsidy with the real cost; per-sale or basket treatment must follow the current account rather than multiplying a subsidy by every item |
+| Cross-border direct shipping | Origin handling, available route/carrier, promised arrival, applicable fees/taxes, settlement and return responsibilities | Compare the landed buyer offer and seller contribution with available local options. Do not transplant a local-store rate or an unsupported warehouse route into the plan |
 
-## Optional local checks in this repository
+For replenishment, use observed SKU demand with its stockout/promotion context, available stock, reserved orders, dated inbound units, replenishment lead time and approved buffer. A useful planning calculation is `demand over the lead/review horizon + chosen buffer − usable stock − inbound arriving in time`, floored at zero and capped by purchasing, storage and cash constraints. Define whether demand and stock are net of existing commitments so reserved orders are not counted twice. This is a scenario, not a forecast guarantee; new or heavily promoted products need a wider uncertainty range.
 
-When this repository is available, read `examples.json` and the relevant `scripts/review.py` branch before preparing input. From the repository root:
+Flag where usable cover ends before replenishment arrives. Limit promotion or propose supply action for that combination; do not treat pending inbound inventory as immediately sellable. Where Full and another service coexist, check the actual displayed-stock and dispatch rule: the service label does not prove that both inventories automatically pool.
+
+For aged stock, compare prospective contribution from continued selling against additional storage/age charges, capital tied up, clearance loss and withdrawal/redeployment cost. Use the country/account's current fee schedule and item age; do not apply a universal number of days or months. Sunk costs and future avoidable costs belong in separate columns. Disposal is a distinct irreversible decision requiring explicit authorization, never an automatic response to poor turnover.
+
+**Retest:** received and saleable units, stockouts, delivery performance, mature refunds, contribution and settlement cash timing. Report the recommendation separately from stock actually accepted by a warehouse.
+
+## 5. Buyer question → Listing or Clip → a measurable check
+
+Use actual product facts, local-language questions, reviews and return reasons to choose the most consequential uncertainty. Reviews identify questions; they do not prove a product claim. Select the smallest suitable change:
+
+- **Compatibility:** verified interface/specification → close-up and connection demonstration → precise supported range in attributes, copy and local subtitles.
+- **Size or included contents:** measurement/reference object → real use → labeled pack contents and unambiguous variant name.
+- **Delivery or offer:** correct the purchasable option, price/arrival information or fulfillment first; a new Clip cannot fix an unavailable variant.
+
+For non-catalog offers, propose exact field/image changes with old and new values. For catalog offers, distinguish seller-controllable offer fields from shared product information that needs correction through the allowed route. Never invent a duplicate identity to gain control of the content.
+
+A media brief contains exact item/SKU, buyer question, approved references, shot purpose, required product detail, local narration/subtitles and version. Model-assisted storyboarding or editing cannot establish physical performance. If the model changes a connector, quantity, material or unsupported claim, isolate and repair that shot; retain the valid work. Check current Clips eligibility, aspect ratio, disclosure and content restrictions for the target site before production/upload, not a single regional rule applied everywhere.
+
+Measure a changed lead image against comparable impressions/clicks; specification or buying guidance against purchase and relevant return reasons. Keep source, offer/price, content version and dates so simultaneous changes are visible. Without asset-level attribution, report a documented before/after test with confounders, not orders caused by the Clip. A brief is not a generated video; approval/upload is not evidence it improved conversion.
+
+## 6. What the Agent delivers, and what this repository actually runs
+
+Prefer existing authorized exports, ERP/connectors or seller UI. Keep original field names and evidence timestamps, then deliver only the artifacts needed for this task:
+
+1. Country-route-offer comparison with reconciled costs and owners.
+2. Catalog state/reason and price-versus-contribution decision.
+3. Advertising object map, returned-level exposure diagnosis and scoped action candidates.
+4. Replenishment/slow-stock decision or exact Listing/Clip brief where requested.
+
+Each proposed action needs a target, reason, controllable field, expected cost exposure, owner and retest condition. Language-model interpretation is not deterministic financial validation; use traceable arithmetic for money and inventory, and mark unconfirmed assumptions.
+
+The existing [review script](../../scripts/review.py) and [example inputs](../../examples.json) run **offline checks**, including a small Mercado Libre campaign diagnosis. They are not a Mercado Libre connector. Run from the repository root:
 
 ```sh
 python3 scripts/review.py examples.json --example catalog
 python3 scripts/review.py examples.json --example paid
-python3 scripts/review.py /absolute/path/to/merchant-review.json
+python3 scripts/review.py examples.json --example mercado_ads
+python3 scripts/review.py merchant-review.json
 ```
 
-`catalog` input uses `platform`, `market`, `account`, `intent` (`update|publish|unpublish`) and `items`: `sku`, `remote_id`, `before`, `desired`, `source_refs`, plus verified flags `variant_mapping_checked`, `fulfillment_checked`, `account_permission_checked`; unpublish also needs `open_orders_checked`. Populate flags from evidence, not to make validation pass.
+- `catalog` checks exact-target `before/desired` proposals with supplied evidence and verification flags. It does not query marketplace catalog competition, infer Ad Group membership or verify a merchant's real permissions.
+- `paid` checks aligned `scope`, operator `policy` and financial `rows`; map reconciled amounts to `gross_revenue/refunds/cogs/fees/fulfillment/spend/orders`. Avoid subtracting fees/refunds already included in a net settlement twice. Unknown costs stay incomplete. Its ROI is **contribution after advertising / ad spend**, not ACOS; `REVIEW_SCALE` is a candidate for review, not measured lift or a budget change.
+- `mercado_ads` accepts **one campaign** using the exact schema in the example. `scope` names site, advertiser, campaign, currency and dates. Normalize that campaign's losses to `metrics.level=campaign` and `unit=percent`, retaining the original report separately; use `null` for missing losses. `groups` supplies the CATALOG parent, FAMILY family or ITEM identity, external key and member items. It checks supplied identity consistency and duplicate members; it cannot discover missing siblings itself.
+- In that mode, `checks` are the operator's verified statements about ownership, complete membership, observation maturity, complete costs, acceptable contribution, saleability, stock and actual budget constraint. They are **not calculations or account verification performed by this script**. Establish contribution separately, for example with reconciled `paid` input; do not set a flag to true just to obtain a budget suggestion.
+- `policy.material_loss_pct` is the operator's materiality threshold, not a platform default or significance test. `max_extra_spend` is the maximum additional spend for the bounded review window in `scope.currency`, not a new daily budget. The example's 20% and USD 25 are synthetic choices. No losses-to-revenue forecast is made.
+- Output includes `group_impacts`, all supplied `campaign_impact_item_ids`, unresolved scope/data issues, `failed_checks` and a review status. Known failed conditions remain visible even when missing metrics set the primary status. Conflicting mappings block changes; `listed` with a reason returns `FIX_CATALOG_REASON` without declaring the offer unpurchasable. Missing losses remain unknown. Material ranking losses return `REVIEW_RANK`; both material losses return `REVIEW_MIXED_LIMITS`. Small losses or a zero cap return `HOLD`. Only material budget losses with the required verified conditions produce `LIMITED_BUDGET_REVIEW` and a cap—not an executed change. Campaign losses are never assigned to individual items.
 
-`paid` requires `scope`, operator `policy` and `rows` in the exact example schema. Map matched revenue/costs to `gross_revenue`, `refunds`, `cogs`, `fees`, `fulfillment`, `spend`, `orders`; explicitly check population, complete costs, window maturity and sellability. Its ROI is **contribution after advertising / ad spend**, not marketplace ACOS. Preserve marketplace metrics separately. `REVIEW_SCALE` is a review candidate, not incremental lift or an executed budget change. The tool does no API calls, image analysis or publishing.
+The mode validates supplied mapping and follows these limited decision rules; it does not retrieve catalog reasons or live membership, calculate `price_to_win` profitability, normalize settlement, model Full fees or replenish inventory. It does not inspect, solve for or edit a campaign's ROAS/ACOS/strategy controls. Those operations still require the verified inputs and explicit work described above. Before claiming a connector or other specialized calculation is implemented, inspect and run that actual implementation with its documented schema.
 
-If the helper is absent, perform the same checks with available spreadsheet/analysis tools; do not imply that the helper verified merchant permissions or data truth.
+```mermaid
+flowchart TD
+  A[Country, route and exact seller offer] --> B{Catalog offer?}
+  B -- Yes --> C[Read competition state, reason and price recommendation]
+  B -- No --> D[Inspect search relevance and comparable buyer offer]
+  C --> E[Reconcile contribution and saleable stock]
+  D --> E
+  E --> F{Can the current offer support paid demand?}
+  F -- No --> G[Propose offer, supply or fulfillment correction]
+  F -- Yes --> H[Map campaign, Ad Group and all affected members]
+  H --> I{What limits exposure?}
+  I -- Budget --> J[Review bounded spend against contribution and stock]
+  I -- Rank --> K[Review offer conditions and target return tradeoff]
+  I -- Unknown --> L[Return eligibility or reporting evidence gap]
+  G --> M[Prepare exact change and owner]
+  J --> M
+  K --> M
+  M --> N{Authorized with supported account controls?}
+  N -- No --> O[Deliver editable proposal]
+  N -- Yes --> P[Apply, read back target and affected members]
+  P --> Q{Expected state matches?}
+  Q -- No --> R[Resolve mismatch before retry]
+  Q -- Yes --> S[Review fulfilled contribution and stock over time]
+```
 
-## Apply and close the task
+## 7. Execute within scope and close with evidence
 
-For authorized changes, record exact before/after values and approved scope. Use a verified existing integration; do not invent API endpoints or scopes. A timeout or uncertain submission requires reading the exact target before retrying, not creating another campaign/listing.
+Analysis ends in decisions; content work ends at the requested draft or production stage. Before an authorized change, reread current values, record the minimal before/after change, and confirm all affected members and existing order obligations. Pausing ads, pausing sale availability and deleting a Listing are different actions. This Skill does not authorize permanent deletion.
 
-Reopen the same account/site/item or campaign. Check saved values, review/publication status and buyer-visible price, variations, availability and delivery where relevant. Report separately: drafted, submitted, pending review, saved, buyer-visible. An API receipt is not proof of public availability; an ad enabled is not evidence of delivery or sales.
+Use the current supported seller capability for the actual country and merchant model. On permission errors, unclear identity or conflicting fields, stop that write and identify the next owner. On timeout or unknown result, read the existing target and submission status before retrying; do not create replacements to escape uncertainty.
 
-**Complete when:** every requested target is read back or explicitly listed as blocked/pending, with remaining uncertainty and no fabricated result. Return the decision table, relevant artifact and concise source-backed explanation; omit private customer/account data from public output.
+After execution, verify the same site, merchant, item or campaign/Ad Group and its affected members. Check saved values, review status and relevant buyer-visible price, availability and delivery. Separate drafted, submitted, pending, saved and publicly purchasable; an active ad is not proof of delivery or sales.
+
+Complete when every requested target has a decision or verified result, remaining uncertainty, and a relevant retest/owner—not merely a successful batch receipt. Keep private account/customer data out of public examples. Current platform controls, fee schedules and measured business results must be established from the current account rather than assumed from this method.
