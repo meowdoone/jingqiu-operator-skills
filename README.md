@@ -15,15 +15,24 @@
 |美客多|[mercado-libre-operations](skills/mercado-libre-operations/SKILL.md)|国家与履约路线、目录竞争与贡献底线、AdGroup 影响范围、预算/排名损失、Full 库存与 Clips|
 |Shopee|[shopee-operations](skills/shopee-operations/SKILL.md)|封面与变体承诺、已付订单转化、利润、当前广告模式|
 |Web / App / SaaS 投放|[paid-acquisition](skills/paid-acquisition/SKILL.md)|搜索/社交/商店差异，创意与承接、归因对账、试用付费与回收|
-|GEO|[geo-distribution](skills/geo-distribution/SKILL.md) · [号池、渠道与数据方法](skills/geo-distribution/references/operating-method.md)|号池与渠道分工、推荐证据缺口、具体改动任务、固定条件复测；附离线样本统计|
+|GEO|[geo-distribution](skills/geo-distribution/SKILL.md) · [号池、渠道与数据方法](skills/geo-distribution/references/operating-method.md)|18 个渠道的具体任务、号池分工、推荐证据缺口、固定条件复测；附离线样本统计|
 |北美用户增长|[north-america-growth](skills/north-america-growth/SKILL.md)|定位、广告/PR/社区、首次价值、重复使用、付费与团队职责|
-|多模态制作|[multimodal-production](skills/multimodal-production/SKILL.md)|商品/人物参考、分镜、逐镜生成或实拍合成、声音、局部返修与整片验收|
+|多模态制作|[multimodal-production](skills/multimodal-production/SKILL.md) · [算法与实现](skills/multimodal-production/references/algorithm-method.md)|参考片 DNA、参考角色、生成控制、质量校准、真实像素候选检查、依赖返修与预算|
 
 每个 Skill 内有英文 Mermaid 流程图。方法之间可以转交明确任务，但不要默认把所有 Skill 都执行一遍。
 
 ## 能实际运行什么
 
 一个零第三方依赖的 Python 3 本地工具：[scripts/review.py](scripts/review.py)。它读取 JSON，输出检查与候选动作，**不联网、不改账户、不发帖、不生成视频、不花钱**。
+
+多模态另有 [scripts/multimodal.py](scripts/multimodal.py)：`inspect` 用现有 FFmpeg 实际解码画面，定位场景变化和低变化候选；`plan` 仅需 Python，按声明的渲染依赖算返修范围与一次尝试预算。它不修改源视频、不调用模型，也不自动判断脸、SKU 或画面语义。
+
+```bash
+python3 scripts/multimodal.py inspect /absolute/path/video.mp4 --seconds 60
+python3 scripts/multimodal.py plan /absolute/path/repair.json
+```
+
+输入、阈值、扫描范围和可运行返修 JSON 见 [算法与实现，第 6 节](skills/multimodal-production/references/algorithm-method.md#6-可以直接运行的两项实现)。切镜/低变化候选需要人工回看；依赖集合需要复查，不表示全部重渲染。媒体检查需 FFmpeg，但不要求安装 Python 模型库；不会自动安装工具。
 
 ```bash
 git clone https://github.com/meowdoone/jingqiu-operator-skills.git
@@ -83,7 +92,7 @@ flowchart LR
 
 ## 验证与尚未覆盖
 
-本地代码包含 54 项测试；10 个 Skill 做格式校验，另用缺成本、主变体缺货、提交后 404 的场景独立检查。活动演示中，订单从 100 到 150，贡献却从 480 降至 200；计算会标出亏损规格，并给出固定结构下 325 单的持平情景，结果保留周期与固定支出条件。美客多检查覆盖对象映射冲突、缺指标、目录 listed 原因、排名/预算限制和经营条件；示例阈值由经营者设定，不是平台标准。测试与示例验证计算和分支，不证明商业有效性，也不是本人店铺业绩。
+本地代码包含 62 项测试；10 个 Skill 做格式校验，另用缺成本、主变体缺货、提交后 404 的场景独立检查。活动演示中，订单从 100 到 150，贡献却从 480 降至 200；计算会标出亏损规格，并给出固定结构下 325 单的持平情景，结果保留周期与固定支出条件。美客多检查覆盖对象映射冲突、缺指标、目录 listed 原因、排名/预算限制和经营条件；示例阈值由经营者设定，不是平台标准。测试与示例验证计算和分支，不证明商业有效性，也不是本人店铺业绩。
 
 GEO 合成例计划 6 次，观察到 5 次，其中有效 4 次、技术失败 1 次、未运行 1 次；重复导入第一条只合并，不增加样本。提及为 3/4、推荐为 2/4、引用目标来源为 1/4；确认检索的有效子集单列 1/2。无引用的有效回答仍在分母，无有效样本时率为 `null`。目标产品 `DEMO-ARM-D27`、来源 `DEMO-compatibility-v1` 和日期均为演示，不是实际模型测试。方法中的改后对照是独立算例，不是当前脚本自动比较的结果。
 

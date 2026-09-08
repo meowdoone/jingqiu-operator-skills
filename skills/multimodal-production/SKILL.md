@@ -7,6 +7,8 @@ description: Produce or repair source-faithful product videos and brand films by
 
 让镜头表达明确的内容，并保住真实商品、人物与使用动作。根据已有素材选择「逐镜生成」「实拍加局部合成」「编辑已有视频」，不是每个项目都整段生成。
 
+需要拆解参考片 DNA、选择控制方式、定位像素异常或计算返修依赖时，先读 [算法与实现方法](references/algorithm-method.md)。里面包含切镜/低变化检查、参考角色、单镜控制、质量校准和可运行返修算例；不将人工审核勾选包装成视觉算法。普通脚本/分镜任务仍按下方交付范围执行。
+
 ## 1. 确认交付与锁定来源
 
 从用户已经给出的信息确定 SKU、受众、用途、交付类型、时长/比例、语言、目标发布位置、输出目录和允许使用的工具/预算。只缺影响结果的硬输入时询问。
@@ -110,7 +112,7 @@ flowchart TD
 
 ## 7. 技术审核与人的验收分开
 
-先记录实际观察。仓库的 `scripts/review.py` 不是视觉模型：它只能整理审核者输入的结果。
+先记录实际观察。仓库的 `scripts/review.py` 不是视觉模型：它只能整理审核者输入的结果。新工具 `scripts/multimodal.py inspect` 会实际解码画面、定位场景变化和低变化候选；`plan` 按输入中已确认的渲染引用图计算待复查范围与一次尝试预算。执行合同、参数及合成算例见 [算法与实现方法，第 6 节](references/algorithm-method.md#6-可以直接运行的两项实现)。它们不识别人脸/SKU，不调用生成模型，也不替代逐镜播放。
 
 以 `examples.json` 的 `shots` 为格式，每镜填 `shot_id/product_ref/character_ref/take/reviewer/timecode` 和 `product_matches/identity_matches/motion_ok/audio_ok/rights_ok`。无人物可填 `character_ref: none`，并在工作记录说明身份项不适用。未知项保持待审，不伪填 `true`；完成真实审核后再提交给脚本。
 
