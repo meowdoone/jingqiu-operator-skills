@@ -5,6 +5,14 @@
     "policy": {"min_orders": 20, "max_spend": 1000, "loss_limit": 100, "min_contribution_roi": 0.2},
     "rows": [{"entity_id": "DEMO-SKU-01", "account": "DEMO", "market": "US", "currency": "USD", "start": "2026-08-01", "end": "2026-08-07", "revenue_basis": "matched_order_cohort", "attribution_window": "7d_click", "population_matched": true, "costs_complete": true, "window_mature": true, "sellable": true, "orders": 30, "gross_revenue": 3000, "refunds": 200, "cogs": 900, "fees": 200, "fulfillment": 200, "spend": 500}]
   },
+  "promotion_mix": {
+    "kind": "promotion_mix", "basis": "scenario", "market": "DEMO-MARKET", "currency": "USD", "period_days": 7,
+    "before_extra_fee": 0, "after_extra_fee": 40,
+    "rows": [
+      {"sku": "DEMO-A", "before_orders": 70, "before_unit_contribution": 6, "after_orders": 70, "after_unit_contribution": 4},
+      {"sku": "DEMO-B", "before_orders": 30, "before_unit_contribution": 2, "after_orders": 80, "after_unit_contribution": -0.5}
+    ]
+  },
   "catalog": {
     "kind": "catalog", "platform": "shopify", "market": "US", "account": "DEMO", "intent": "update",
     "items": [{"sku": "DEMO-SKU-01", "remote_id": "DEMO-PRODUCT-01", "before": {"title": "Desk light", "price": 40}, "desired": {"title": "Adjustable desk light", "price": 40}, "source_refs": ["demo-approved-spec"], "variant_mapping_checked": true, "fulfillment_checked": true, "account_permission_checked": true}]

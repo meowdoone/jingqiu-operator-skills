@@ -125,6 +125,40 @@ def paid(data):
     return {"scope": scope, "rows": result, "warning": "ROI is contribution after ads / ad spend. Never substitute marketplace GMV or external estimates. No predicted lifetime value."}
 
 
+def promotion_mix(data):
+    """Scenario arithmetic by variant. No demand prediction or platform settlement parsing."""
+    require(data, "market", "currency", "basis")
+    if data["basis"] != "scenario" or count(data, "period_days") == 0:
+        raise ValueError("use scenario basis and an equal, positive period_days for both plans")
+    extra = {p: number(data, p + "_extra_fee") for p in ("before", "after")}
+    rows = records(data, "rows")
+    unique(rows, "sku")
+    checked = []
+    for row in rows:
+        values = {p + "_orders": count(row, p + "_orders") for p in ("before", "after")}
+        for p in ("before", "after"):
+            values[p + "_unit_contribution"] = number(row, p + "_unit_contribution", -math.inf)
+            values[p + "_contribution"] = values[p + "_orders"] * values[p + "_unit_contribution"]
+        checked.append({"sku": row["sku"], **values})
+    totals = {}
+    for p in ("before", "after"):
+        orders = sum(r[p + "_orders"] for r in checked)
+        subtotal = sum(r[p + "_contribution"] for r in checked)
+        totals[p] = {"orders": orders, "contribution": round(subtotal - extra[p], 2),
+                     "unit_contribution_before_extra_fee": ratio(subtotal, orders)}
+    before, after = totals["before"], totals["after"]
+    average = sum(r["after_contribution"] for r in checked) / after["orders"] if after["orders"] else None
+    needed = (before["contribution"] + extra["after"]) / average if average and average > 0 and before["contribution"] > 0 else None
+    delta = round(after["contribution"] - before["contribution"], 2)
+    loss_skus = [r["sku"] for r in checked if r["after_orders"] > 0 and r["after_unit_contribution"] < 0]
+    return {"market": data["market"], "currency": data["currency"], "basis": "scenario", "period_days": data["period_days"],
+            "before_extra_fee": extra["before"], "after_extra_fee": extra["after"], "rows": checked,
+            **totals, "contribution_change": delta, "loss_variants": loss_skus,
+            "orders_to_match_before_at_after_mix": round(needed, 2) if needed is not None else None,
+            "status": "REVIEW_MIX_AND_OFFER" if loss_skus or delta < 0 else "REVIEW_FEASIBILITY",
+            "warning": "Unit contribution uses reconciled seller receivable minus costs not already deducted. Extra fees are separate fixed scenario costs. Equal periods, same market/currency; not observed lift or a volume forecast. Break-even assumes unchanged mix, unit costs and extra fees; integer variant orders, inventory and capacity need a new check."}
+
+
 def catalog(data):
     """Exact-target change proposals, not a publishing connector."""
     require(data, "platform", "market", "account", "intent")
@@ -215,7 +249,7 @@ def shots(data):
     return {"shots": output, "warning": "Flags are supplied evidence, not computed image similarity. READY_FOR_EDIT is not final film approval."}
 
 
-CHECKS = {"paid": paid, "catalog": catalog, "cohorts": cohorts, "distribution": distribution, "shots": shots}
+CHECKS = {"paid": paid, "promotion_mix": promotion_mix, "catalog": catalog, "cohorts": cohorts, "distribution": distribution, "shots": shots}
 
 
 def review(data):

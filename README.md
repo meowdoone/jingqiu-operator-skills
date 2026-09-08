@@ -8,11 +8,11 @@
 
 |领域|方法与 Skill|重点|
 |---|---|---|
-|TikTok Shop|[tiktok-shop-operations](skills/tiktok-shop-operations/SKILL.md)|商品、达人匹配、样品、素材授权与成交；上下架 / Listing / 视频 / 广告|
+|TikTok Shop|[tiktok-shop-operations](skills/tiktok-shop-operations/SKILL.md)|可证明的商品场景、可用授权素材成本、寄样分支、点击/购买/退款诊断、GMV Max 素材状态与下一版 brief|
 |Amazon|[amazon-operations](skills/amazon-operations/SKILL.md)|可售报价、搜索词、点击与购买、SKU 利润、预算；四类商品操作|
 |Shopify|[shopify-operations](skills/shopify-operations/SKILL.md)|DTC 网站设计归入 Shopify，包含商品、媒体、广告承接与购买路径|
 |DTC 网站设计|[完整建站方法](skills/shopify-operations/references/storefront-design.md)|品牌目标 → 定位与替代方案 → 页面与交互 → Shopify 数据 → 桌面/移动验收|
-|AliExpress / AE|[aliexpress-operations](skills/aliexpress-operations/SKILL.md)|卖家经营，不是采购代发；国家、属性、变体、配送模板与促销成本|
+|AliExpress / AE|[aliexpress-operations](skills/aliexpress-operations/SKILL.md)|经营权责、国家×规格总报价与结算、漏斗诊断、活动亏损变体和贡献测算|
 |美客多|[mercado-libre-operations](skills/mercado-libre-operations/SKILL.md)|目录竞争、库存履约、商品分组、Clips 购买问题与 Product Ads|
 |Shopee|[shopee-operations](skills/shopee-operations/SKILL.md)|封面与变体承诺、已付订单转化、利润、当前广告模式|
 |Web / App / SaaS 投放|[paid-acquisition](skills/paid-acquisition/SKILL.md)|搜索/社交/商店差异，创意与承接、归因对账、试用付费与回收|
@@ -30,6 +30,7 @@
 git clone https://github.com/meowdoone/jingqiu-operator-skills.git
 cd jingqiu-operator-skills
 python3 scripts/review.py examples.json --example paid
+python3 scripts/review.py examples.json --example promotion_mix
 python3 scripts/review.py examples.json --example catalog
 python3 scripts/review.py examples.json --example cohorts
 python3 scripts/review.py examples.json --example distribution
@@ -42,6 +43,7 @@ python3 -m unittest discover -s tests -v
 |模式|实际实现|不代表什么|
 |---|---|---|
 |`paid`|核账号、市场、币种、日期、收入/归因口径；匹配群体且成本完整后算广告后贡献；给观察、对账、停投/修改/放量**复核候选**，独立提示不可售/超支风险|没有预测 LTV、统计显著性、因果归因或竞价执行；不能把面板 GMV 当增量|
+|`promotion_mix`|相同市场、币种和等长周期内，按变体订单×单笔贡献减固定支出，对比两种情景；列亏损规格和固定销量结构下持平所需总单量|不解析平台结算或预测需求；单笔贡献先由已核结算减尚未扣除的成本得到，不重复扣费；整数规格、库存及阶梯成本另算|
 |`catalog`|精确 SKU 与远端 ID 的改动前后差异；检查变体/履约/权限证据；区分 update / publish / unpublish|没有上传或调用卖家 API；不支持删除；NO_CHANGE 只表示输入没有差异|
 |`cohorts`|按固定观察期筛成熟批次；以 eligible 为共同分母算激活、留存、付费率|没有读取数据库或自动定义业务事件；不是激活后留存率；不同结果人数不能相加|
 |`distribution`|检查账号授权声明、内容版本、提交、公开 URL、时区时间格式和回读声明；输出台账状态|不访问帖子证明声明，不查索引/引用，不把环境数量当独立用户|
@@ -78,7 +80,7 @@ flowchart LR
 
 ## 验证与尚未覆盖
 
-本地代码包含 21 项测试；10 个 Skill 做格式校验，另用缺成本、主变体缺货、提交后 404 的场景独立检查。测试验证这些输入与判断行为，不证明商业有效性。
+本地代码包含 29 项测试；10 个 Skill 做格式校验，另用缺成本、主变体缺货、提交后 404 的场景独立检查。活动演示中，订单从 100 到 150，贡献却从 480 降至 200；计算会标出亏损规格，并给出固定结构下 325 单的持平情景，结果保留周期与固定支出条件。测试与示例验证计算和分支，不证明商业有效性，也不是本人店铺业绩。
 
 出价、预算增幅、关键词数和测试窗口按当前业务确定；执行前核实所在国家、账户权限与平台规则。虚假包装、评论、独立背书或绕过限制的做法不在执行范围内。
 

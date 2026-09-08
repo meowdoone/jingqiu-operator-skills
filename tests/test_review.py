@@ -30,6 +30,59 @@ class ReviewTests(unittest.TestCase):
         self.assertEqual(row["status"], "RECONCILE")
         self.assertIsNone(row["contribution_roi"])
 
+    def test_promotion_more_orders_less_contribution(self):
+        result = module.review(self.data("promotion_mix"))
+        self.assertEqual(result["before"], {"orders": 100, "contribution": 480, "unit_contribution_before_extra_fee": 4.8})
+        self.assertEqual(result["after"], {"orders": 150, "contribution": 200, "unit_contribution_before_extra_fee": 1.6})
+        self.assertEqual(result["contribution_change"], -280)
+        self.assertEqual(result["loss_variants"], ["DEMO-B"])
+        self.assertEqual(result["orders_to_match_before_at_after_mix"], 325)
+        self.assertEqual(result["status"], "REVIEW_MIX_AND_OFFER")
+
+    def test_promotion_zero_orders_or_negative_average_no_volume_target(self):
+        for field, value in (("after_orders", 0), ("after_unit_contribution", -1), ("after_unit_contribution", 0)):
+            data = self.data("promotion_mix")
+            for row in data["rows"]: row[field] = value
+            result = module.review(data)
+            self.assertIsNone(result["orders_to_match_before_at_after_mix"])
+
+    def test_promotion_output_keeps_period_and_cost_assumptions(self):
+        data = self.data("promotion_mix")
+        data.update(period_days=30, before_extra_fee=10, after_extra_fee=50)
+        result = module.review(data)
+        for key in ("period_days", "before_extra_fee", "after_extra_fee"):
+            self.assertEqual(result[key], data[key])
+
+    def test_promotion_invalid_counts_or_money(self):
+        for field, value in (("after_orders", -1), ("after_orders", 0.5), ("after_orders", True), ("after_unit_contribution", float("nan")), ("after_unit_contribution", float("inf"))):
+            data = self.data("promotion_mix")
+            data["rows"][0][field] = value
+            with self.assertRaises(ValueError): module.review(data)
+
+    def test_promotion_duplicate_variants(self):
+        data = self.data("promotion_mix")
+        data["rows"][1]["sku"] = data["rows"][0]["sku"]
+        with self.assertRaises(ValueError): module.review(data)
+
+    def test_promotion_requires_scope_and_scenario(self):
+        for field, value in (("basis", "observed_lift"), ("period_days", 0), ("market", ""), ("currency", ""), ("after_extra_fee", -1)):
+            data = self.data("promotion_mix")
+            data[field] = value
+            with self.assertRaises(ValueError): module.review(data)
+
+    def test_promotion_fixed_fee_and_nonloss_case(self):
+        data = self.data("promotion_mix")
+        data["rows"][1]["after_unit_contribution"] = 4
+        result = module.review(data)
+        self.assertEqual(result["after"]["contribution"], 560)
+        self.assertEqual(result["orders_to_match_before_at_after_mix"], 130)
+        self.assertEqual(result["status"], "REVIEW_FEASIBILITY")
+
+    def test_promotion_no_positive_baseline_no_break_even_claim(self):
+        data = self.data("promotion_mix")
+        data["before_extra_fee"] = 500
+        self.assertIsNone(module.review(data)["orders_to_match_before_at_after_mix"])
+
     def test_mismatched_currency_or_window(self):
         for key, value in (("account", "OTHER"), ("market", "MX"), ("currency", "CNY"), ("attribution_window", "1d_view"), ("end", "2026-08-08")):
             data = self.data("paid")
