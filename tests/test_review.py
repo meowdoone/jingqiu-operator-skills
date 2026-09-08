@@ -298,6 +298,124 @@ class ReviewTests(unittest.TestCase):
         data["posts"][0].update(public_readback_matches=True, post_url="https://example.com/post/1", verified_at="2026-09-08T12:00:00+08:00")
         self.assertEqual(module.review(data)["posts"][0]["status"], "PUBLISHED_VERIFIED")
 
+    def test_geo_sample_demo_uses_valid_not_planned_denominators(self):
+        result = module.review(self.data("geo_sample"))
+        self.assertEqual((result["planned_count"], result["observed_count"], result["valid_count"]), (6, 5, 4))
+        self.assertEqual(result["status_counts"], {"valid": 4, "technical_failure": 1, "refused": 0, "not_triggered": 0, "unobserved": 1})
+        self.assertEqual((result["observed_rate"], result["valid_completion_rate"]), (0.833333, 0.666667))
+        self.assertEqual(result["mentions"], {"count": 3, "denominator": 4, "rate": 0.75})
+        self.assertEqual(result["recommendations"], {"count": 2, "denominator": 4, "rate": 0.5})
+        self.assertEqual(result["citations"], {"count": 1, "denominator": 4, "rate": 0.25})
+        self.assertEqual(result["confirmed_search_valid"], {"valid_count": 2, "citations": 1, "citation_rate": 0.5})
+        self.assertEqual(result["unobserved_run_ids"], ["DEMO-06"])
+
+    def test_geo_identical_imports_merge_and_keep_original_refs(self):
+        data = self.data("geo_sample")
+        data["runs"][-1] = dict(reversed(list(data["runs"][-1].items())))
+        result = module.review(data)
+        self.assertEqual(result["duplicates_merged"], 1)
+        self.assertEqual(result["runs"], data["runs"][:5])
+        self.assertEqual(result["scope"], data["scope"])
+        self.assertEqual(result["planned_run_ids"], data["planned_run_ids"])
+
+    def test_geo_conflicting_same_run_id_rejected(self):
+        for key, value in (("cited_target", False), ("raw_answer_ref", "OTHER"), ("captured_at", "2026-09-08T09:01:00Z")):
+            with self.subTest(key=key):
+                data = self.data("geo_sample")
+                data["runs"][-1][key] = value
+                with self.assertRaisesRegex(ValueError, "conflicting records"):
+                    module.review(data)
+
+    def test_geo_separate_runs_with_identical_answer_are_kept(self):
+        data = self.data("geo_sample")
+        row = copy.deepcopy(data["runs"][0])
+        row["run_id"] = "DEMO-06"
+        data["runs"].append(row)
+        result = module.review(data)
+        self.assertEqual((result["observed_count"], result["valid_count"], result["duplicates_merged"]), (6, 5, 1))
+        self.assertEqual(result["citations"], {"count": 2, "denominator": 5, "rate": 0.4})
+
+    def test_geo_invalid_plans_and_unplanned_runs_rejected(self):
+        for value in ([], "DEMO-01", ["DEMO-01", "DEMO-01"], [" "], [1], [None]):
+            with self.subTest(value=value):
+                data = self.data("geo_sample")
+                data["planned_run_ids"] = value
+                with self.assertRaises(ValueError): module.review(data)
+        data = self.data("geo_sample")
+        data["runs"][0]["run_id"] = "NOT-PLANNED"
+        with self.assertRaisesRegex(ValueError, "unplanned run_id"): module.review(data)
+
+    def test_geo_scope_must_be_complete_and_exact(self):
+        for key in self.data("geo_sample")["scope"]:
+            for action in ("missing", "different"):
+                with self.subTest(key=key, action=action):
+                    data = self.data("geo_sample")
+                    if action == "missing": data["runs"][0]["scope"].pop(key)
+                    else: data["runs"][0]["scope"][key] = "OTHER"
+                    with self.assertRaisesRegex(ValueError, "scope mismatch"): module.review(data)
+        for value in (None, [], {}, {"surface": "demo"}):
+            data = self.data("geo_sample")
+            data["scope"] = value
+            with self.assertRaises(ValueError): module.review(data)
+        data = self.data("geo_sample")
+        data["scope"]["market"] = " "
+        with self.assertRaises(ValueError): module.review(data)
+
+    def test_geo_empty_and_nonvalid_samples_have_null_outcome_rates(self):
+        for statuses in ([], ["technical_failure", "refused", "not_triggered"]):
+            data = self.data("geo_sample")
+            base = data["runs"][4]
+            data["runs"] = [{**copy.deepcopy(base), "run_id": data["planned_run_ids"][i], "status": status} for i, status in enumerate(statuses)]
+            result = module.review(data)
+            self.assertEqual((result["valid_count"], result["observed_count"]), (0, len(statuses)))
+            self.assertEqual(result["status_counts"]["unobserved"], 6 - len(statuses))
+            for status in statuses: self.assertEqual(result["status_counts"][status], 1)
+            for key in ("mentions", "recommendations", "citations"):
+                self.assertEqual(result[key], {"count": 0, "denominator": 0, "rate": None})
+            self.assertIsNone(result["confirmed_search_valid"]["citation_rate"])
+
+    def test_geo_zero_confirmed_search_does_not_remove_valid_answers(self):
+        data = self.data("geo_sample")
+        for row in data["runs"]:
+            if row["status"] == "valid": row["search_observed"] = False
+        result = module.review(data)
+        self.assertEqual(result["citations"], {"count": 1, "denominator": 4, "rate": 0.25})
+        self.assertEqual(result["confirmed_search_valid"], {"valid_count": 0, "citations": 0, "citation_rate": None})
+
+    def test_geo_valid_flags_are_required_strict_booleans(self):
+        for key in ("mentioned", "recommended", "cited_target", "search_observed"):
+            for value in (1, 0, "true", "false", None, [], "MISSING"):
+                with self.subTest(key=key, value=value):
+                    data = self.data("geo_sample")
+                    if value == "MISSING": data["runs"][0].pop(key)
+                    else: data["runs"][0][key] = value
+                    with self.assertRaises(ValueError): module.review(data)
+        data = self.data("geo_sample")
+        data["runs"][0].update(mentioned=False, recommended=True)
+        with self.assertRaisesRegex(ValueError, "recommended requires mentioned"): module.review(data)
+
+    def test_geo_evidence_and_timezone_required(self):
+        cases = [(key, value) for key in ("run_id", "raw_answer_ref", "evidence_ref") for value in (None, " ", 123)]
+        cases += [("captured_at", value) for value in (None, "DEMO-date", "2026-09-08", "2026-09-08T09:00:00")]
+        for key, value in cases:
+            with self.subTest(key=key, value=value):
+                data = self.data("geo_sample")
+                data["runs"][0][key] = value
+                with self.assertRaises(ValueError): module.review(data)
+
+    def test_geo_invalid_statuses_or_rows_are_rejected(self):
+        for value in ("success", "unobserved", "", 1):
+            data = self.data("geo_sample")
+            data["runs"][4]["status"] = value
+            with self.assertRaises(ValueError): module.review(data)
+        for value in (None, {}, [None], ["DEMO-01"]):
+            data = self.data("geo_sample")
+            data["runs"] = value
+            with self.assertRaises(ValueError): module.review(data)
+        data = self.data("geo_sample")
+        data["runs"][4]["mentioned"] = False
+        with self.assertRaisesRegex(ValueError, "only allowed on valid"): module.review(data)
+
     def test_shot_review_returns_local_fault(self):
         row = module.review(self.data("shots"))["shots"][0]
         self.assertEqual(row["failed_checks"], ["motion_ok"])

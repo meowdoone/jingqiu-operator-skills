@@ -15,7 +15,7 @@
 |美客多|[mercado-libre-operations](skills/mercado-libre-operations/SKILL.md)|国家与履约路线、目录竞争与贡献底线、AdGroup 影响范围、预算/排名损失、Full 库存与 Clips|
 |Shopee|[shopee-operations](skills/shopee-operations/SKILL.md)|封面与变体承诺、已付订单转化、利润、当前广告模式|
 |Web / App / SaaS 投放|[paid-acquisition](skills/paid-acquisition/SKILL.md)|搜索/社交/商店差异，创意与承接、归因对账、试用付费与回收|
-|GEO|[geo-distribution](skills/geo-distribution/SKILL.md) · [号池、渠道与数据方法](skills/geo-distribution/references/operating-method.md)|Google 账号号池、多渠道发帖、ChatGPT/Gemini 推荐采样、数据清洗、内容检查与复测|
+|GEO|[geo-distribution](skills/geo-distribution/SKILL.md) · [号池、渠道与数据方法](skills/geo-distribution/references/operating-method.md)|号池与渠道分工、推荐证据缺口、具体改动任务、固定条件复测；附离线样本统计|
 |北美用户增长|[north-america-growth](skills/north-america-growth/SKILL.md)|定位、广告/PR/社区、首次价值、重复使用、付费与团队职责|
 |多模态制作|[multimodal-production](skills/multimodal-production/SKILL.md)|商品/人物参考、分镜、逐镜生成或实拍合成、声音、局部返修与整片验收|
 
@@ -34,6 +34,7 @@ python3 scripts/review.py examples.json --example mercado_ads
 python3 scripts/review.py examples.json --example catalog
 python3 scripts/review.py examples.json --example cohorts
 python3 scripts/review.py examples.json --example distribution
+python3 scripts/review.py examples.json --example geo_sample
 python3 scripts/review.py examples.json --example shots
 python3 -m unittest discover -s tests -v
 ```
@@ -48,6 +49,7 @@ python3 -m unittest discover -s tests -v
 |`catalog`|精确 SKU 与远端 ID 的改动前后差异；检查变体/履约/权限证据；区分 update / publish / unpublish|没有上传或调用卖家 API；不支持删除；NO_CHANGE 只表示输入没有差异|
 |`cohorts`|按固定观察期筛成熟批次；以 eligible 为共同分母算激活、留存、付费率|没有读取数据库或自动定义业务事件；不是激活后留存率；不同结果人数不能相加|
 |`distribution`|检查账号授权声明、内容版本、提交、公开 URL、时区时间格式和回读声明；输出台账状态|不访问帖子证明声明，不查索引/引用，不把环境数量当独立用户|
+|`geo_sample`|按预先固定的产品端、问题和条件核样本；合并重复导入，拒绝冲突；分列有效/失败/拒绝/未触发/未运行，输出提及、推荐、目标来源引用与确认检索子集的分子分母|统计输入标签，不读取原始答案核实；不自动采样、清洗实体或 URL、判断来源归属，不计算权重、排名或因果效果|
 |`shots`|整理审核者提供的带时码镜头检查，指出商品/身份/动作/声音/权利问题|不读取像素、不做视觉识别；READY_FOR_EDIT 不是成片通过|
 
 贡献公式：同一组订单与花费下，`gross_revenue − refunds − cogs − fees − fulfillment − spend`。`contribution_roi = 广告后贡献 / spend`，不是平台 ROAS。费用不能重复扣；日期、退款范围、服务成本与时区先由数据提供者统一。已有支出超限的提示不依赖利润是否补齐，但数据无法确认时仍须人工核查。
@@ -81,7 +83,9 @@ flowchart LR
 
 ## 验证与尚未覆盖
 
-本地代码包含 43 项测试；10 个 Skill 做格式校验，另用缺成本、主变体缺货、提交后 404 的场景独立检查。活动演示中，订单从 100 到 150，贡献却从 480 降至 200；计算会标出亏损规格，并给出固定结构下 325 单的持平情景，结果保留周期与固定支出条件。美客多检查覆盖对象映射冲突、缺指标、目录 listed 原因、排名/预算限制和经营条件；示例阈值由经营者设定，不是平台标准。测试与示例验证计算和分支，不证明商业有效性，也不是本人店铺业绩。
+本地代码包含 54 项测试；10 个 Skill 做格式校验，另用缺成本、主变体缺货、提交后 404 的场景独立检查。活动演示中，订单从 100 到 150，贡献却从 480 降至 200；计算会标出亏损规格，并给出固定结构下 325 单的持平情景，结果保留周期与固定支出条件。美客多检查覆盖对象映射冲突、缺指标、目录 listed 原因、排名/预算限制和经营条件；示例阈值由经营者设定，不是平台标准。测试与示例验证计算和分支，不证明商业有效性，也不是本人店铺业绩。
+
+GEO 合成例计划 6 次，观察到 5 次，其中有效 4 次、技术失败 1 次、未运行 1 次；重复导入第一条只合并，不增加样本。提及为 3/4、推荐为 2/4、引用目标来源为 1/4；确认检索的有效子集单列 1/2。无引用的有效回答仍在分母，无有效样本时率为 `null`。目标产品 `DEMO-ARM-D27`、来源 `DEMO-compatibility-v1` 和日期均为演示，不是实际模型测试。方法中的改后对照是独立算例，不是当前脚本自动比较的结果。
 
 出价、预算增幅、关键词数和测试窗口按当前业务确定；执行前核实所在国家、账户权限与平台规则。虚假包装、评论、独立背书或绕过限制的做法不在执行范围内。
 

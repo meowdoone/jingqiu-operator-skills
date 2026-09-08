@@ -323,6 +323,86 @@ def distribution(data):
     return {"posts": output, "warning": "Ledger validation only: supplied readback is not independently checked. No fingerprint evasion, fabricated endorsements or posting is performed. A verified post is not an AI citation."}
 
 
+def geo_sample(data):
+    """Count supplied answer labels within one planned question/condition group."""
+    scope_keys = {"surface", "market", "language", "question_id", "question_version",
+                  "conditions_id", "target_product_id", "target_source_id"}
+    outcome_keys = ("mentioned", "recommended", "cited_target", "search_observed")
+    statuses = ("valid", "technical_failure", "refused", "not_triggered")
+
+    def text_field(obj, key):
+        value = obj.get(key)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{key} must be a non-empty string")
+        return value
+
+    scope = data.get("scope")
+    if not isinstance(scope, dict) or set(scope) != scope_keys:
+        raise ValueError("geo_sample scope must contain exactly the eight defined scope fields")
+    for key in scope_keys:
+        text_field(scope, key)
+    planned = data.get("planned_run_ids")
+    if not isinstance(planned, list) or not planned or any(not isinstance(x, str) or not x.strip() for x in planned):
+        raise ValueError("planned_run_ids must be a non-empty list of non-empty strings")
+    planned_set = set(planned)
+    if len(planned_set) != len(planned):
+        raise ValueError("duplicate planned run_id")
+    rows = data.get("runs")
+    if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
+        raise ValueError("runs must be a list of objects; use an empty list when none were observed")
+    seen, signatures, duplicates = {}, {}, 0
+    for row in rows:
+        run_id = text_field(row, "run_id")
+        if run_id not in planned_set:
+            raise ValueError(f"unplanned run_id: {run_id}")
+        if not isinstance(row.get("scope"), dict) or row["scope"] != scope:
+            raise ValueError(f"scope mismatch for {run_id}")
+        text_field(row, "raw_answer_ref")
+        try:
+            timestamp(row.get("captured_at"))
+        except (ValueError, TypeError) as exc:
+            raise ValueError(f"invalid captured_at for {run_id}: expected timestamp with timezone") from exc
+        status = text_field(row, "status")
+        if status not in statuses:
+            raise ValueError(f"unknown status for {run_id}")
+        if status == "valid":
+            for key in outcome_keys:
+                flag(row, key)
+            text_field(row, "evidence_ref")
+            if row["recommended"] and not row["mentioned"]:
+                raise ValueError(f"recommended requires mentioned for {run_id}")
+        elif any(key in row for key in outcome_keys):
+            raise ValueError(f"outcome flags are only allowed on valid runs: {run_id}")
+        elif "evidence_ref" in row:
+            text_field(row, "evidence_ref")
+        signature = json.dumps(row, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        if run_id in seen:
+            if signatures[run_id] != signature:
+                raise ValueError(f"conflicting records for run_id: {run_id}")
+            duplicates += 1
+        else:
+            seen[run_id], signatures[run_id] = row, signature
+    ordered = [seen[run_id] for run_id in planned if run_id in seen]
+    valid = [row for row in ordered if row["status"] == "valid"]
+    searched = [row for row in valid if row["search_observed"]]
+    status_counts = {status: sum(row["status"] == status for row in ordered) for status in statuses}
+    status_counts["unobserved"] = len(planned) - len(ordered)
+    metrics = {}
+    for label, key in (("mentions", "mentioned"), ("recommendations", "recommended"), ("citations", "cited_target")):
+        numerator = sum(row[key] for row in valid)
+        metrics[label] = {"count": numerator, "denominator": len(valid), "rate": ratio(numerator, len(valid))}
+    search_citations = sum(row["cited_target"] for row in searched)
+    return {"scope": scope, "planned_run_ids": planned, "planned_count": len(planned),
+            "observed_count": len(ordered), "valid_count": len(valid), "status_counts": status_counts,
+            "observed_rate": ratio(len(ordered), len(planned)),
+            "valid_completion_rate": ratio(len(valid), len(planned)), **metrics,
+            "confirmed_search_valid": {"valid_count": len(searched), "citations": search_citations,
+                                       "citation_rate": ratio(search_citations, len(searched))},
+            "unobserved_run_ids": [run_id for run_id in planned if run_id not in seen],
+            "duplicates_merged": duplicates, "runs": ordered,
+            "warning": "Counts use supplied labels, not independently verified evidence. cited_target means an actual citation of the predefined target_source_id, not a related link. search_observed=false means search was not confirmed, not proof that no search occurred. Valid uncited answers remain in the denominator. Failures, refusals, not-triggered runs and unobserved plans are separate. No model querying, posting, pixel reading, URL/entity normalization or automatic attribution; no causal, ranking, weighting or population inference."}
+
+
 def shots(data):
     """Editorial checklist assembly from human/multimodal review; not a vision model."""
     rows = records(data, "shots")
@@ -336,7 +416,7 @@ def shots(data):
     return {"shots": output, "warning": "Flags are supplied evidence, not computed image similarity. READY_FOR_EDIT is not final film approval."}
 
 
-CHECKS = {"paid": paid, "promotion_mix": promotion_mix, "mercado_ads": mercado_ads, "catalog": catalog, "cohorts": cohorts, "distribution": distribution, "shots": shots}
+CHECKS = {"paid": paid, "promotion_mix": promotion_mix, "mercado_ads": mercado_ads, "catalog": catalog, "cohorts": cohorts, "distribution": distribution, "geo_sample": geo_sample, "shots": shots}
 
 
 def review(data):

@@ -76,11 +76,16 @@ From this repository root:
 
 ```sh
 python3 scripts/review.py examples.json --example distribution
+python3 scripts/review.py examples.json --example geo_sample
 ```
 
-The helper only checks a supplied publication ledger: actual input is `{"kind":"distribution","posts":[...]}`. It requires unique task IDs, account/environment/content references and real boolean authorization/submission/readback values; a verified entry also needs valid URL and timestamp fields.
+`distribution` checks a supplied publication ledger: input is `{"kind":"distribution","posts":[...]}`. It requires unique task IDs, account/environment/content references and real boolean authorization/submission/readback values; a verified entry also needs valid URL and timestamp fields. `PUBLISHED_VERIFIED` means those fields passed, not that the script visited the post.
 
-`PUBLISHED_VERIFIED` means supplied evidence fields passed, not that the script visited the post. It does not operate accounts, post, inspect index/rankings, query answer engines, clean their responses or calculate citation lift. Those tasks follow the method using available approved tools; absent capabilities remain implementation work.
+For sample statistics, read section 9 of [the operating method](references/operating-method.md) and map verified labels to the `geo_sample` example. Use one complete scope and a predeclared run plan. `mentioned` and `recommended` refer to the fixed target product; `cited_target` refers to an actual citation of the predefined target source, not a related link. Validate labels against the saved answer before running the helper; it does not read evidence files.
+
+The sample checker merges identical imports by run ID, rejects conflicting/unplanned/mixed-scope records and retains independent runs with identical answers. Report planned, observed and valid counts separately. Keep uncited valid answers in the overall denominator and confirmed-search results in a separate subset. A zero outcome denominator returns `null`; failure, refusal, not-triggered and unobserved are distinct states.
+
+**Complete when:** the output preserves scope and original references, every planned run is observed or unobserved, and each reported rate has its numerator and denominator. Resolve invalid input instead of dropping it to obtain a better result. The local helpers do not operate accounts, query answer engines, clean entities/URLs, infer source ownership or calculate causal lift; these require the available approved tools and evidence review described above.
 
 ```mermaid
 flowchart TD

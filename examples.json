@@ -38,6 +38,20 @@
     "kind": "distribution",
     "posts": [{"task_id": "DEMO-POST-01", "account_role": "official brand", "content_version": "v1", "environment_ref": "demo-profile", "canonical_url": "https://example.com/guide", "authorized": true, "submitted": true, "public_readback_matches": false}]
   },
+  "geo_sample": {
+    "kind": "geo_sample",
+    "demo_note": "Entirely synthetic dates, source references and outcomes. These are not real users, accounts or model observations.",
+    "scope": {"surface": "DEMO-answer-surface", "market": "DEMO-US", "language": "en", "question_id": "DEMO-Q1", "question_version": "DEMO-v1", "conditions_id": "DEMO-C1", "target_product_id": "DEMO-ARM-D27", "target_source_id": "DEMO-compatibility-v1"},
+    "planned_run_ids": ["DEMO-01", "DEMO-02", "DEMO-03", "DEMO-04", "DEMO-05", "DEMO-06"],
+    "runs": [
+      {"run_id": "DEMO-01", "scope": {"surface": "DEMO-answer-surface", "market": "DEMO-US", "language": "en", "question_id": "DEMO-Q1", "question_version": "DEMO-v1", "conditions_id": "DEMO-C1", "target_product_id": "DEMO-ARM-D27", "target_source_id": "DEMO-compatibility-v1"}, "captured_at": "2026-09-08T09:00:00+00:00", "raw_answer_ref": "DEMO-answer-01", "status": "valid", "mentioned": true, "recommended": false, "cited_target": true, "search_observed": true, "evidence_ref": "DEMO-answer-01"},
+      {"run_id": "DEMO-02", "scope": {"surface": "DEMO-answer-surface", "market": "DEMO-US", "language": "en", "question_id": "DEMO-Q1", "question_version": "DEMO-v1", "conditions_id": "DEMO-C1", "target_product_id": "DEMO-ARM-D27", "target_source_id": "DEMO-compatibility-v1"}, "captured_at": "2026-09-08T09:05:00+00:00", "raw_answer_ref": "DEMO-answer-02", "status": "valid", "mentioned": true, "recommended": true, "cited_target": false, "search_observed": true, "evidence_ref": "DEMO-answer-02"},
+      {"run_id": "DEMO-03", "scope": {"surface": "DEMO-answer-surface", "market": "DEMO-US", "language": "en", "question_id": "DEMO-Q1", "question_version": "DEMO-v1", "conditions_id": "DEMO-C1", "target_product_id": "DEMO-ARM-D27", "target_source_id": "DEMO-compatibility-v1"}, "captured_at": "2026-09-08T09:10:00+00:00", "raw_answer_ref": "DEMO-answer-03", "status": "valid", "mentioned": true, "recommended": true, "cited_target": false, "search_observed": false, "evidence_ref": "DEMO-answer-03"},
+      {"run_id": "DEMO-04", "scope": {"surface": "DEMO-answer-surface", "market": "DEMO-US", "language": "en", "question_id": "DEMO-Q1", "question_version": "DEMO-v1", "conditions_id": "DEMO-C1", "target_product_id": "DEMO-ARM-D27", "target_source_id": "DEMO-compatibility-v1"}, "captured_at": "2026-09-08T09:15:00+00:00", "raw_answer_ref": "DEMO-answer-04", "status": "valid", "mentioned": false, "recommended": false, "cited_target": false, "search_observed": false, "evidence_ref": "DEMO-answer-04"},
+      {"run_id": "DEMO-05", "scope": {"surface": "DEMO-answer-surface", "market": "DEMO-US", "language": "en", "question_id": "DEMO-Q1", "question_version": "DEMO-v1", "conditions_id": "DEMO-C1", "target_product_id": "DEMO-ARM-D27", "target_source_id": "DEMO-compatibility-v1"}, "captured_at": "2026-09-08T09:20:00+00:00", "raw_answer_ref": "DEMO-error-05", "status": "technical_failure"},
+      {"run_id": "DEMO-01", "scope": {"surface": "DEMO-answer-surface", "market": "DEMO-US", "language": "en", "question_id": "DEMO-Q1", "question_version": "DEMO-v1", "conditions_id": "DEMO-C1", "target_product_id": "DEMO-ARM-D27", "target_source_id": "DEMO-compatibility-v1"}, "captured_at": "2026-09-08T09:00:00+00:00", "raw_answer_ref": "DEMO-answer-01", "status": "valid", "mentioned": true, "recommended": false, "cited_target": true, "search_observed": true, "evidence_ref": "DEMO-answer-01"}
+    ]
+  },
   "shots": {
     "kind": "shots",
     "shots": [{"shot_id": "DEMO-SHOT-01", "product_ref": "demo-product-photo", "character_ref": "none", "take": "v2", "reviewer": "demo-reviewer", "timecode": "00:03-00:05", "product_matches": true, "identity_matches": true, "motion_ok": false, "audio_ok": true, "rights_ok": true}]
